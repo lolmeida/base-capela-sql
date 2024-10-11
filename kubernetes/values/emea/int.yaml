@@ -1,0 +1,17 @@
+replicaCount: 2
+
+mcid: sep-app-cargos-integration-mock-mcid
+
+cmPath: configmap/emea/integration/application.properties
+
+environment: integration
+region: eu-central-1
+hub: emea
+
+# Dynatrace related tags
+dynatraceEnable: false
+dynatraceEnvironment: integration
+
+canary:
+  hosts:
+    - peah-trm.int.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw

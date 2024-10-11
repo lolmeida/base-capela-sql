@@ -1,0 +1,19 @@
+{{- if and (ne .Values.environment "integration") (ne .Values.environment "test") }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: {{ .Values.releaseVersion | quote }}
+    team: {{ .Values.team | quote }}
+    stage: {{ .Release.Namespace }}
+    MCID: {{ .Values.mcid | quote }}
+spec:
+  minAvailable: {{ ternary "2" "1" (eq .Values.environment "prod") }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      team: {{ .Values.team | quote }}
+{{- end }}

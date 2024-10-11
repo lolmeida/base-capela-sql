@@ -1,0 +1,70 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: {{ .Values.releaseVersion | quote }}
+    team: {{ .Values.team }}
+    stage: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      team: {{ .Values.team }}
+      stage: {{ .Release.Namespace }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: http
+      interval: 30s
+      scheme: http
+      relabelings:
+        - sourceLabels:
+          - __meta_kubernetes_service_label_team
+          targetLabel: team
+        - sourceLabels:
+          - __meta_kubernetes_service_label_MCID
+          targetLabel: MCID
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Chart.Name }}-blackbox
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: {{ .Values.releaseVersion | quote }}
+    team: {{ .Values.team }}
+    stage: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  endpoints:
+  - port: probe
+    interval: 10s
+    path: /probe
+    scheme: http
+    params:
+      module:
+      - http_2xx
+      target:
+      - {{ .Chart.Name }}.{{ .Release.Namespace }}.svc.cluster.local/api/v1/health-check
+    relabelings:
+    - sourceLabels:
+      - __param_target
+      targetLabel: target
+    - replacement: {{ .Values.mcid }}
+      targetLabel: MCID
+    - targetLabel: namespace
+      replacement: {{ .Release.Namespace }}
+    - targetLabel: service
+      replacement: {{ .Chart.Name }}-blackbox
+    - targetLabel: job
+      replacement: {{ .Chart.Name }}-blackbox

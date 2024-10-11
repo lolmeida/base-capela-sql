@@ -1,0 +1,27 @@
+replicaCount: 3
+
+maxReplicas: 6
+minReplicas: 3
+
+mcid: 10APP11952000
+
+environment: prod
+region: eu-central-1
+hub: emea
+
+# Dynatrace related tags
+dynatraceEnable: true
+dynatraceEnvironment: PROD
+dynatraceEnvironmentUrlId: "33879e82-62d6-4e98-98a8-1da4539cd9a1"
+
+cmPath: configmap/emea/production/application.properties
+
+canary:
+  hosts:
+    - peah-trm.prod.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw
+    - smartexp.prod.cd-emea.bmw.cloud
+    - smartexp.prod.cvs-emea.bmw.cloud
+
+#alerts
+# One of WARNING, MINOR, MAJOR, CRITICAL (translates to Low / Medium / High / Critical in ITSM)
+error422Severity: MAJOR

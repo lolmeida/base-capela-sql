@@ -1,0 +1,6 @@
+### GET - Health Check
+
+GET {{host}}{{sep-themes-port}}/experience-themes/api/v1/health-check
+bmw-canary: {{bmw-canary}}
+
+> ./scripts/Get-HealthCheck.js

@@ -1,0 +1,14 @@
+### GET - Get Experiences
+
+< {%
+    client.global.set("requestId", "getThemesById1");
+    client.global.set("ignoreKeys", `["downloadDate"]`);
+%}
+
+## GET {{host}}{{app-capela-port}}/experience-themes/api/v1/themes
+GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+bmw-gcid: {{bmw-gcid}}
+bmw-home-market: DE
+bmw-canary: true
+
+> ../scripts/assertEqualResponse.js

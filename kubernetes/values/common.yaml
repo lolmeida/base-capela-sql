@@ -1,0 +1,49 @@
+requestsCPU: 750m
+
+requestsMemory: 512Mi
+limitsMemory: 512Mi
+
+healthPath: /api/v1/health-check
+
+team: peah
+
+initialDelaySeconds: 5
+
+startupFailureThreshold: 25
+startupPeriodSeconds: 3
+
+readinessFailureThreshold: 2
+readinessPeriodSeconds: 1
+
+livenessFailureThreshold: 4
+livenessPeriodSeconds: 10
+
+# Prometheus rules
+# One of WARNING, MINOR, MAJOR, CRITICAL (translates to Low / Medium / High / Critical in ITSM)
+error422Severity: WARNING
+error5xxSeverity: WARNING
+serviceDownSeverity: WARNING
+podCrashLoopingSeverity: WARNING
+priorityTargetDown: WARNING
+priorityHpaMaxedOut: WARNING
+
+maxReplicas: 1
+minReplicas: 1
+targetCPUUtilizationPercentage: 50
+
+# Dynatrace related tags
+appId: APPR-119856
+appName: Smart Experience Platform
+compassId: appcargos
+msId: appcargos
+dynatraceAgent:
+  inject: true
+
+# Pod Anti-Affinity
+antiAffinityWeight: 100
+antiAffinityTopologyKey: "kubernetes.io/hostname"
+
+# Contrast Assess
+contrastAPIUrl: https://contrastassess.bmwgroup.net/Contrast
+contrastApplicationGroup: "Smart Experience Platform"
+contrastApplicationMetadata: "aPPID='APP-28745'"

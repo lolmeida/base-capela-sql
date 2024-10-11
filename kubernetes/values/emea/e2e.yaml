@@ -1,0 +1,32 @@
+replicaCount: 2
+
+maxReplicas: 4
+minReplicas: 2
+
+mcid: 10APP11952001
+
+environment: e2e
+region: eu-central-1
+hub: emea
+
+# Increased startup time and memory due to IAST
+startupFailureThreshold: 35
+requestsMemory: 1Gi
+limitsMemory: 1Gi
+
+# Dynatrace related tags
+dynatraceEnable: true
+dynatraceEnvironment: E2E
+dynatraceEnvironmentUrlId: "3fdefedc-a8d2-4c96-8300-f4d07059614a"
+
+cmPath: configmap/emea/e2e/application.properties
+
+canary:
+  hosts:
+    - peah-trm.e2e.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw
+    - smartexp.e2e.cd-emea.bmw.cloud
+    - smartexp.e2e.cvs-emea.bmw.cloud
+
+#alerts
+# One of WARNING, MINOR, MAJOR, CRITICAL (translates to Low / Medium / High / Critical in ITSM)
+error422Severity: MINOR

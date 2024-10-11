@@ -1,0 +1,233 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Chart.Name }}-{{ .Release.Namespace }}-prometheus-rule
+  namespace: {{ .Release.Namespace }}
+spec:
+  groups:
+    - name: {{ .Chart.Name }}.{{ .Release.Namespace }}.rules
+      rules:
+      - alert: "[PEAH][cargos] TooMany5xxResponseCodes"
+        expr: sum(increase(nginx_ingress_controller_requests{exported_service={{ .Chart.Name | quote }}, status=~"^5.."}[10m])) by (exported_service, status) >= 10
+        for: 1m
+        labels:
+          mc_id: {{ .Values.mcid }}
+          priority: {{ .Values.error5xxSeverity }}
+          event_id: "264"
+          namespace: {{ .Release.Namespace }}
+          app: {{ .Chart.Name }}
+        annotations:
+          summary: High number of 5xx code responses on PEAH cargos service.
+          description: >
+            {{ .Chart.Name }} in {{ .Values.region }}/{{ .Values.environment }} produced more than 10 5xx response codes in 10 minutes.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+            Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+            Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+            Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+            Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+      - alert: "[PEAH][cargos] ServiceDown"
+        expr: avg_over_time(probe_success{job="{{ .Chart.Name }}-blackbox", namespace={{ .Release.Namespace | quote }}}[60s]) < 0.2
+        for: 1m
+        labels:
+          mc_id: {{ .Values.mcid }}
+          priority: {{ .Values.serviceDownSeverity }}
+          event_id: "265"
+          namespace: {{ .Release.Namespace }}
+          app: {{ .Chart.Name }}
+        annotations:
+          summary: {{ .Chart.Name }} service in {{ .Values.region }}/{{ .Values.environment }} is down.
+          description: >
+            {{ .Chart.Name }} service is down. Triggered by less than 20 percent success rate in the last minute.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+            Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+            Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+            Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+            Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+      - alert: "[PEAH][cargos] TargetDown"
+        expr: 100 * (count (up {job={{ .Chart.Name | quote }}, namespace={{ .Release.Namespace | quote }}} == 0) / count(up{job={{ .Chart.Name | quote }}, namespace={{ .Release.Namespace | quote  }}})) >= 50
+        for: 10m
+        labels:
+          priority: {{ .Values.priorityTargetDown }}
+          event_id: "266"
+          namespace: {{ .Release.Namespace | quote }}
+          app: {{ .Chart.Name }}
+          mc_id: {{ .Values.mcid | quote}}
+        annotations:
+          summary: {{ .Chart.Name }} service in {{ .Values.region }}/{{ .Values.environment }} targets are down.
+          description: >
+            {{ .Chart.Name }} failed to execute requests. Triggered by having more then 50 percent failure in the last 10 minutes.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+            Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+            Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+            Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+            Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+      - alert: "[PEAH][cargos] KubePodCrashLooping"
+        expr: rate(kube_pod_container_status_restarts_total{job="kube-state-metrics", container={{ .Chart.Name | quote }}, namespace={{ .Release.Namespace | quote }}}[15m]) > 0
+        for: 1h
+        labels:
+          mc_id: {{ .Values.mcid }}
+          priority: {{ .Values.podCrashLoopingSeverity }}
+          event_id: "267"
+          namespace: {{ .Release.Namespace }}
+          app: {{ .Chart.Name }}
+        annotations:
+          summary: {{ .Chart.Name }} in {{ .Values.region }}/{{ .Values.environment }} has pods in the crash loop state.
+          description: >
+            {{ .Chart.Name }} has pods in crash loop state. Triggered by having at least 1 pod restarting during the last hour.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+            Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+            Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+            Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+            Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+          runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodcrashlooping
+      - alert: "[PEAH][cargos] KubeHpaMaxedOut"
+        expr: kube_horizontalpodautoscaler_status_current_replicas{job="kube-state-metrics", namespace={{ .Release.Namespace | quote }}, horizontalpodautoscaler={{ .Chart.Name | quote }}} >= kube_horizontalpodautoscaler_spec_max_replicas{job="kube-state-metrics", namespace={{ .Release.Namespace | quote }}, horizontalpodautoscaler={{ .Chart.Name | quote }}} - 1
+        for: 1h
+        labels:
+          priority: {{ .Values.priorityHpaMaxedOut }}
+          event_id: "268"
+          namespace: {{ .Release.Namespace | quote }}
+          app: {{ .Chart.Name }}
+          mc_id: {{ .Values.mcid | quote}}
+        annotations:
+          summary: {{ .Chart.Name }} in {{ .Values.region }}/{{ .Values.environment }} has HPA with maximum replicas.
+          description: >
+            {{ .Chart.Name }} in {{ .Values.region }}/{{ .Values.environment }} has HPA with maximum number of replicas.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+            Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+            Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+            Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+            Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+            Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+            Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+      - alert: "[PEAH][cargos] TooMany422ResponseCodes"
+        expr: sum(increase(nginx_ingress_controller_requests{exported_service={{ .Chart.Name | quote }}, status="422"}[5m])) by (exported_service, status) >= 10
+        for: 1m
+        labels:
+          mc_id: {{ .Values.mcid }}
+          priority: {{ .Values.error422Severity }}
+          event_id: "269"
+          namespace: {{ .Release.Namespace }}
+          app: {{ .Chart.Name }}
+        annotations:
+          summary: High number of 422 code responses on PEAH cargos service.
+          description: >
+            {{ .Chart.Name }} in {{ .Values.region }}/{{ .Values.environment }} produced more than 10 422 response codes in 5 minutes.
+
+            {{ if eq .Values.region  "eu-central-1" }}
+                Kibana Dashboard: https://cdls-eu.bmwgroup.net/cloud/s/peah/app/discover/
+
+                Grafana Dashboard: https://metrics.eu-central-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+                Dynatrace Dashboard: https://xxu26128.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.eu-central-1.iis.daytona.eu-central-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else if eq .Values.region  "us-east-1" }}
+                Kibana Dashboard: https://cdls-us.bmwgroup.net/cloud/s/peah/app/discover/
+
+                Grafana Dashboard: https://metrics.us-east-1.{{ .Values.environment }}.iis.connected.bmw/dashboards?query=trm
+
+                Dynatrace Dashboard: https://wgv50241.live.dynatrace.com/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+
+            {{ .Chart.Name }} API: https://peah-trm.{{ .Values.environment }}.us-east-1.iis.daytona.us-east-1.aws.cloud.bmw/trm-swagger-ui/
+            {{ else }}
+                Kibana Dashboard: https://cdls-cn.bmwgroup.net/cloud/s/peah/app/discover/
+
+                Grafana Dashboard: https://metrics.cn-north-1.{{ .Values.environment }}.iis-cn.cv.bmw.com.cn/dashboards?query=trm
+
+                Dynatrace Dashboard: https://dynatracemgd-tsp.bmwgroup.net/e/b921f1b9-c00e-4031-b9d1-f5a0d530757b/#dashboard;gf=all;id={{ .Values.dynatraceEnvironmentUrlId }}
+            {{ end }}
+

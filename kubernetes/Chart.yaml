@@ -1,0 +1,8 @@
+# chart version definition
+version: 1.0.0
+
+# application variables
+apiVersion: v1
+appVersion: %APP_VERSION%
+description: A Helm chart of %APP_NAME% for Kubernetes
+name: %APP_NAME%

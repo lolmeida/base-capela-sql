@@ -1,0 +1,166 @@
+[
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/login/api/v1/user-info",
+      "headers": {
+        "Authorization": [ "Authorized" ]
+      }
+    },
+    "httpResponse": {
+      "body" : "{\"roles\":[\"ise-cargos-viewer\",\"ise-cargos-status-editor\",\"ise-cargos-metadata-editor\",\"ise-cargos-configuration-editor\",\"ise-cargos-requirements-editor\",\"ise-cargos-styles-editor\",\"ise-cargos-admin-info-editor\",\"ise-cargos-translations-editor\"],\"username\":\"QXVFUNCT\"}",
+      "statusCode": 200,
+      "headers" : {
+        "Accept" : [ "application/json" ],
+        "Content-type" : [ "application/json" ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/login/api/v1/user-info",
+      "headers": {
+        "Authorization": [ "Forbidden" ]
+      }
+    },
+    "httpResponse": {
+      "body" : "{\"roles\":[\"wrong-role\"],\"username\":\"QXVFUNCT\"}",
+      "statusCode": 200,
+      "headers" : {
+        "Accept" : [ "application/json" ],
+        "Content-type" : [ "application/json" ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/login/api/v1/user-info",
+      "headers": {
+        "Authorization": [ "Unauthorized" ]
+      }
+    },
+    "httpResponse": {
+      "statusCode": 401,
+      "headers" : {
+        "Accept" : [ "application/json" ],
+        "Content-type" : [ "application/json" ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/login/api/v1/user-info"
+    },
+    "httpResponse": {
+      "body": "{\"logTransactionId\":\"51db01d3-f5b5-4d9a-8bda-6a56482e47f4\",\"requestTimestamp\":1234567890123,\"requestUrl\":\"http://localhost:8080/login/api/v1/user-info\",\"statusCode\":400,\"parameterErrors\":[{\"message\":\"'Authorization' header required with 'Bearer <token>' scheme.\",\"name\":\"Authorization\"}]}",
+      "statusCode": 400,
+      "headers" : {
+        "Accept" : [ "application/json" ],
+        "Content-type" : [ "application/json" ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/content-delivery/api/v1/admin/dev/cargos/assets/{assetType}/{assetId}/variants/{variantId}",
+      "pathParameters": {
+        "assetType": [ "slideshows|tiles|widgets|IMAGE|screensavers|colourcargos|artistspeeches|shortcuticons" ],
+        "assetId": [ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" ],
+        "variantId": [ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\..*" ]
+      },
+      "headers": {
+        "Authorization": [ "Technical" ]
+      }
+    },
+    "httpResponse": {
+      "body": "",
+      "statusCode": 201,
+      "headers": {
+        "Accept": [ "application/json" ],
+        "Content-type": [ "application/json" ],
+        "fileId": [ "2702451d-840e-4cc0-8d90-2aeef4822f56.png" ],
+        "Etag": [ "DummyEtag" ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "DELETE",
+      "path": "",
+      "pathParameters": {
+
+      }
+    },
+    "httpResponse": {
+      "body": "",
+      "statusCode": 204
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "DELETE",
+      "path": "",
+      "pathParameters": {
+        "assetType": [ "slideshows|tiles|widgets|images|screensavers|colourcargos|artistspeeches|shortcuticons" ],
+        "assetId": [ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" ]
+      },
+      "headers": {
+        "Authorization": [ "Authorized" ]
+      }
+    },
+    "httpResponse": {
+      "body": "",
+      "statusCode": 204
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "DELETE",
+      "path": "",
+      "pathParameters": {
+        "assetType": [ "slideshows|tiles|widgets|images|screensavers|colourcargos|artistspeeches|shortcuticons" ],
+        "assetId": [ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" ],
+        "variantId": [ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" ]
+      },
+      "headers": {
+        "Authorization": [ "Authorized" ]
+      }
+    },
+    "httpResponse": {
+      "body": "",
+      "statusCode": 204
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/experience-catalog/api/v1/experiences"
+    },
+    "httpResponse": {
+      "statusCode": 201,
+      "headers": {
+        "Accept": [ "text/plain" ],
+        "Content-type": [ "text/plain" ],
+        "Authorization": [ "Technical"  ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "PUT",
+      "path": "/experience-catalog/api/v1/experiences/.*"
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "headers": {
+        "Accept": [ "text/plain" ],
+        "Content-type": [ "text/plain" ],
+        "Authorization": [ "Technical"  ]
+      }
+    }
+  }
+]

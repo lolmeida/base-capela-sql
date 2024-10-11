@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: {{ .Values.releaseVersion | quote }}
+    team: {{ .Values.team }}
+    stage: {{ .Release.Namespace }}
+    MCID: {{ .Values.mcid }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Chart.Name }}
+    team: {{ .Values.team }}
+    stage: {{ .Release.Namespace }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+    name: http

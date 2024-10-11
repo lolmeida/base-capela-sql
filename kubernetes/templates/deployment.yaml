@@ -1,0 +1,188 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    version: {{ .Values.releaseVersion | quote }}
+    team: {{ .Values.team }}
+    stage: {{ .Release.Namespace }}
+    MCID: {{ .Values.mcid }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimitCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      team: {{ .Values.team }}
+      stage: {{ .Release.Namespace }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.dynatraceEnable }}
+        oneagent.dynatrace.com/inject: {{ .Values.dynatraceAgent.inject | quote }}
+        app-id: {{ .Values.appId }}
+        app-name: {{ .Values.appName }}
+        compass-id: {{ .Values.compassId }}
+        ms-id: {{ .Values.msId }}
+        namespace: {{ .Release.Namespace }}
+        {{- end }}
+        ClusterVersion: {{ .Values.clusterVersion | default "" | quote }}
+        ClusterName: {{ .Values.clusterName | default "" | quote }}
+      labels:
+        app: {{ .Chart.Name }}
+        version: {{ .Values.releaseVersion | quote }}
+        team: {{ .Values.team }}
+        stage: {{ .Release.Namespace }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: dot-contrast
+          emptyDir: {}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.ecrHost }}/{{ .Values.ecrName }}:{{ .Values.releaseVersion }}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        {{- if or (eq .Values.environment "test") (eq .Values.environment "integration") }}
+        - name: debug
+          containerPort: 5005
+        {{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.requestsCPU | quote }}
+            memory: {{ .Values.requestsMemory | quote }}
+          limits:
+            memory: {{ .Values.limitsMemory | quote }}
+        startupProbe:
+          failureThreshold: {{ .Values.startupFailureThreshold }}
+          httpGet:
+            scheme: HTTP
+            path: {{ .Values.healthPath }}
+            port: http
+          initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          periodSeconds: {{ .Values.startupPeriodSeconds }}
+        readinessProbe:
+          failureThreshold: {{ .Values.readinessFailureThreshold }}
+          httpGet:
+            scheme: HTTP
+            path: {{ .Values.healthPath }}
+            port: http
+          initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessPeriodSeconds }}
+        livenessProbe:
+          failureThreshold: {{ .Values.livenessFailureThreshold }}
+          httpGet:
+            scheme: HTTP
+            path: {{ .Values.healthPath }}
+            port: http
+          initialDelaySeconds: {{ .Values.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessPeriodSeconds }}
+          timeoutSeconds: {{ .Values.livenessPeriodSeconds }}
+        env:
+        - name: JAVA_TOOL_OPTIONS
+          value: >
+            {{- if or (eq .Values.environment "test") (eq .Values.environment "integration") }}
+            -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+            {{- end }}
+            {{- if (eq .Values.environment "integration") }}
+            -Dio.netty.leakDetection.level=paranoid
+            {{- end }}
+            {{- if and (eq .Values.environment "e2e") (eq .Values.region "eu-central-1") }}
+            -Dcontrast.application.name={{ .Chart.Name }}
+            -Dcontrast.application.group={{ .Values.contrastApplicationGroup | quote }}
+            -Dcontrast.application.metadata={{ .Values.contrastApplicationMetadata }}
+            -Dcontrast.api.url={{ .Values.contrastAPIUrl }}
+            -Dcontrast.server.environment={{ .Values.environment }}
+            -javaagent:/home/jboss/contrast/contrast.jar
+            {{- end }}
+        - name: CHART_NAME
+          value: {{ .Chart.Name }}
+        {{- if and (eq .Values.environment "e2e") (eq .Values.region "eu-central-1") }}
+        - name: GC_CONTAINER_OPTIONS
+          value: -XX:+UseG1GC
+        - name: CONTRAST__API__USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: contrastAPIUsername
+        - name: CONTRAST__API__API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: contrastAPIKey
+        - name: CONTRAST__API__SERVICE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: contrastAPIServiceKey
+        {{- end }}
+        - name: JAVA_TRUSTSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: java_truststore_password
+        - name: AUTHORIZATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: authorization_token
+        - name: JAVA_TRUSTSTORE_PATH
+          value: {{ .Values.javaTruststorePath }}
+        - name: DEPLOY_ENVIRONMENT
+          value: {{ .Release.Namespace }}
+        - name: DEPLOY_REGION
+          value: {{ .Values.region }}
+        - name: USER_GROUP_NAME
+          value: {{ .Values.cacheUser }}
+        - name: CACHE_HOST
+          value: {{ .Values.cacheHost }}
+        - name: MEMORYDB_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: memorydb_encryption_key
+        - name: MEMORYDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Chart.Name }}
+              key: memorydb_password
+        {{- if .Values.dynatraceEnable }}
+        - name: DT_RELEASE_STAGE
+          value: {{ .Values.environment }}
+        - name: DT_RELEASE_PRODUCT
+          value: {{ .Chart.Name }}
+        - name: STAGE_ENVIRONMENT
+          value: {{ .Values.dynatraceEnvironment | quote }}
+        - name: DT_CUSTOM_PROP
+          valueFrom:
+            configMapKeyRef:
+              name: dynatrace-orbit-config
+              key: dynatrace-tags
+        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          runAsGroup: 185
+          runAsNonRoot: true
+          runAsUser: 185
+        volumeMounts:
+          - name: dot-contrast
+            mountPath: /home/jboss/.contrast
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.antiAffinityWeight }}
+              podAffinityTerm:
+                topologyKey: {{ .Values.antiAffinityTopologyKey }}
+                labelSelector:
+                  matchLabels:
+                    app: {{ .Chart.Name }}
