@@ -42,10 +42,31 @@ public class UserResource implements PeahResource {
     }
 
     @Override
-    public Response findByCustomer(final String id) {
-        List<User> data = service.findBy(id);
+    public Response find(final String id) {
+        List<User> data = service.find(id);
         return translateService.createResponse(data, UserResponse.class);
     }
+
+    @Override
+    public void deleteby(final Object request) {
+
+    }
+
+
+    @Override
+    public void deleteby(final User entity) {
+         Response.ok(service.deleteby(entity)).build();
+    }
+
+
+
+
+
+
+
+
+
+
 
 
     @POST

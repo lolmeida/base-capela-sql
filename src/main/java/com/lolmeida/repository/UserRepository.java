@@ -5,7 +5,6 @@ import com.lolmeida.domain.entity.database.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,12 +22,19 @@ public class UserRepository implements PanacheRepositoryBase<User, UUID>, PeahRe
 
 
     @Override
-    public List<User> findBy(final String id){
+    public List<User> find(final String id){
         return list("id like ?1", id);
     }
 
+
+
     @Override
-    @Transactional
+    public Object deleteby(User entity){
+        delete(entity);
+        return null;
+    }
+
+    @Override
     public String save(User entity) {
         persistAndFlush(entity);
         return entity.getId();

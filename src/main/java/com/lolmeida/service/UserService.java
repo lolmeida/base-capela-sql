@@ -24,8 +24,14 @@ public class UserService implements PeahRepository<User> {
     }
 
     @Override
-    public List<User> findBy(String id) {
-        return repository.findBy(id);
+    public List<User> find(String id) {
+        return repository.find(id);
+    }
+
+    @Override
+    public Object deleteby( User entity) {
+         repository.delete(entity);
+        return null;
     }
 
     @Override
