@@ -11,5 +11,3 @@ Content-Type: application/json
     "phoneNumber":"987 0980 34",
     "address":"Listal"
 }
-
-> ./scripts/Post-AddTheme.js

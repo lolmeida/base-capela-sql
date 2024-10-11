@@ -1,5 +1,6 @@
 package com.lolmeida;
 
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -9,7 +10,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-
+@RequestScoped
+@Path("/user")
+@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 public interface PeahResource <T> {
 
     @GET
@@ -28,9 +31,9 @@ public interface PeahResource <T> {
     public Response findByCustomer(
             @PathParam("id") final String id);
 
-    @POST
+   /* @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response save(@RequestBody T request);
+    public Response save(@RequestBody T request);*/
 
 }
