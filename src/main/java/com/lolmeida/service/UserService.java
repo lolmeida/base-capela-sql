@@ -2,7 +2,7 @@ package com.lolmeida.service;
 
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.PeahRepository;
-import com.lolmeida.repository.UtilizadorPeahRepository;
+import com.lolmeida.repository.UserRepository;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @RequestScoped
 public class UserService implements PeahRepository<User> {
     @Inject
-    UtilizadorPeahRepository repository;
+    UserRepository repository;
 
     @Override
     public List<User> findAll(String... orderByColumns){

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
-public class UtilizadorPeahRepository implements PanacheRepositoryBase<User, UUID>, PeahRepository<User> {
+public class UserRepository implements PanacheRepositoryBase<User, UUID>, PeahRepository<User> {
     public List<User> findAll(String... orderByColumns){
         return listAll(Sort.descending(orderByColumns)).stream().toList();
     }

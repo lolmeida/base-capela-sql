@@ -31,7 +31,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
         List<User> data = service.findAll();
-        return createResponse(data);
+        return translateService.createResponse(data, UserResponse.class);
     }
 
     @GET
@@ -40,14 +40,14 @@ public class UserResource {
             @PathParam("field") final String field,
             @PathParam("value") final String value) {
         List<User> data = service.search( field, value);
-        return createResponse(data);
+        return translateService.createResponse(data, UserResponse.class);
     }
 
     @GET
     @Path("/{id}")
     public Response findByCustomer(@PathParam("id") final String id){
         List<User> data = service.findBy(id);
-        return createResponse(data);
+        return translateService.createResponse(data, UserResponse.class);
     }
 
 
@@ -64,13 +64,15 @@ public class UserResource {
                 .build();
     }
 
-    private Response createResponse(List<User> data){
+
+
+   /* private Response createResponse(List<User> data){
         final List<UserResponse> list = data
                 .stream()
                 .map(entity -> translateService.translate(entity, UserResponse.class))
                 .toList();
         return Response.ok(data).build();
-    }
+    }*/
 
     private UserResponse requestToObj (){
         return translateService.translate(User.class, UserResponse.class);
