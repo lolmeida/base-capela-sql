@@ -1,7 +1,6 @@
-### GET - Get Users
+### GET - Get UsersById
 
-
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/sdrFsert3h
 bmw-gcid: {{bmw-gcid}}
 bmw-home-market: DE
 bmw-canary: true

@@ -1,4 +1,4 @@
-package com.lolmeida.entity;
+package com.lolmeida.domain.entity;
 
 import com.lolmeida.Utils;
 

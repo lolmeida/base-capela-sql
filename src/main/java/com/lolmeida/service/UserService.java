@@ -1,6 +1,6 @@
 package com.lolmeida.service;
 
-import com.lolmeida.entity.database.Utilizador;
+import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.PeahRepository;
 import com.lolmeida.repository.UtilizadorPeahRepository;
 import jakarta.enterprise.context.RequestScoped;
@@ -9,27 +9,27 @@ import jakarta.inject.Inject;
 import java.util.List;
 
 @RequestScoped
-public class UtilizadorService implements PeahRepository<Utilizador> {
+public class UserService implements PeahRepository<User> {
     @Inject
     UtilizadorPeahRepository repository;
 
     @Override
-    public List<Utilizador> findAll(String... orderByColumns){
+    public List<User> findAll(String... orderByColumns){
         return  repository.findAll(orderByColumns);
     }
 
     @Override
-    public List<Utilizador> search(String field, String value) {
+    public List<User> search(String field, String value) {
         return repository.search(field, value);
     }
 
     @Override
-    public List<Utilizador> findBy(String id) {
+    public List<User> findBy(String id) {
         return repository.findBy(id);
     }
 
     @Override
-    public String save(Utilizador entity) {
+    public String save(User entity) {
         return repository.save(entity);
     }
 }

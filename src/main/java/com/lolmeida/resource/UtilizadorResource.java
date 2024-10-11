@@ -1,10 +1,11 @@
 package com.lolmeida.resource;
 
 import com.lolmeida.Utils;
-import com.lolmeida.dto.request.UtilizadorRequest;
-import com.lolmeida.dto.response.UtilizadorResponse;
-import com.lolmeida.entity.database.Utilizador;
-import com.lolmeida.service.UtilizadorService;
+import com.lolmeida.domain.translate.TranslateService;
+import com.lolmeida.dto.request.UserRequest;
+import com.lolmeida.dto.response.UserResponse;
+import com.lolmeida.domain.entity.database.User;
+import com.lolmeida.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -21,15 +22,19 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UtilizadorResource {
     @Inject
-    UtilizadorService service;
+    UserService service;
+
+    @Inject
+    TranslateService translateService;
 
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-        List<UtilizadorResponse> data = service.findAll()
+
+        List<UserResponse> data = service.findAll()
                 .stream()
-                .map(this::objToResponse)
+                .map(user -> translateService.translate(user, UserResponse.class))
                 .toList();
         return Response.ok(data).build();
     }
@@ -39,9 +44,9 @@ public class UtilizadorResource {
     public Response search(
             @PathParam("field") final String field,
             @PathParam("value") final String value) {
-        List<UtilizadorResponse> data = service.search( field, value)
+        List<UserResponse> data = service.search( field, value)
                 .stream()
-                .map(this::objToResponse)
+                .map(user -> translateService.translate(user, UserResponse.class))
                 .toList();
         return Response.ok(data).build();
     }
@@ -49,9 +54,9 @@ public class UtilizadorResource {
     @GET
     @Path("/{id}")
     public Response findByCustomer(@PathParam("id") final String id){
-        List<UtilizadorResponse> data = service.findBy(id)
+        List<UserResponse> data = service.findBy(id)
                 .stream()
-                .map(this::objToResponse)
+                .map(user -> translateService.translate(user, UserResponse.class))
                 .toList();
         return Response.ok(data).build();
     }
@@ -59,44 +64,22 @@ public class UtilizadorResource {
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response save(@RequestBody UtilizadorRequest request) {
-        service.save(requestToObj(request));
-        //return Response.ok(request).build();
+    public Response save(@RequestBody UserRequest request) {
+        service.save(translateService.translate(request, User.class));
 
         return Response
-                .ok(service.search("Mail", service.save(requestToObj(request))))
+                //.ok(service.search("Mail", service.save(requestToObj(request))))
+                .ok("requested")
                 .build();
     }
 
-    private Utilizador requestToObj (UtilizadorRequest request){
-        return Utilizador.builder()
-                .id(Utils.generateRandomString())
-                .Mail(request.Mail())
-                .Nome(request.Nome())
-                .Telefone(request.Telefone())
-                .Morada(request.Morada())
-                .build();
+    private User objToResponse (){
+        return translateService.translate(UserResponse.class, User.class);
+
     }
 
-    private UtilizadorResponse objToResponse (Utilizador entity) {
-        return UtilizadorResponse.builder()
-                .Mail(entity.getMail())
-                .Nome(entity.getNome())
-                .Telefone(entity.getTelefone())
-                .Morada(entity.getMorada())
-                .Assinatura(entity.getAssinatura())
-                .Previlegio(entity.getPrevilegio())
-                .Perfil(entity.getPerfil())
-                .Clientes(entity.getClientes())
-                .Recebimentos(entity.getRecebimentos())
-                .Cargas(entity.getCargas())
-                .DiasEdicaoDocumento(entity.getDiasEdicaoDocumento())
-                .PrazoAnularEstadoDias(entity.getPrazoAnularEstadoDias())
-                .DiasEliminarDocumento(entity.getDiasEliminarDocumento())
-                .QtdMaxFactDivida(entity.getQtdMaxFactDivida())
-                .DiasMaxFactDivida(entity.getDiasMaxFactDivida())
-                .HojeMenosData(entity.getHojeMenosData())
-                .id(entity.getId())
-                .build();
+    private UserResponse requestToObj (){
+        return translateService.translate(User.class, UserResponse.class);
+
     }
 }
