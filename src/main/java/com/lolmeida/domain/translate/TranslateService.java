@@ -2,6 +2,7 @@ package com.lolmeida.domain.translate;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.domain.translate.request.UserRequestTranslate;
@@ -85,5 +87,13 @@ public class TranslateService {
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElseThrow(() -> new UnsupportedOperationException("No suitable translator for object with class " + c));
+    }
+
+    public <T, R> Response createResponse(List<T> data, Class<R> responseType) {
+        final List<R> list = data
+                .stream()
+                .map(entity -> this.translate(entity, responseType))
+                .toList();
+        return Response.ok(list).build();
     }
 }

@@ -6,4 +6,4 @@ bmw-gcid: {{bmw-gcid}}
 bmw-home-market: DE
 bmw-canary: true
 
-> ../scripts/assertEqualResponse.js
+#> ../scripts/assertEqualResponse.js

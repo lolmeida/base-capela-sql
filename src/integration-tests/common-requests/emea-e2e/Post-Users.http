@@ -9,8 +9,7 @@ Content-Type: application/json
     "mail":"lou@ren.co",
     "name":"Lourenço",
     "phoneNumber":"987 0980 34",
-    "address":"Listal",
-    "id": "ddrtetre"
+    "address":"Listal"
 }
 
 > ./scripts/Post-AddTheme.js

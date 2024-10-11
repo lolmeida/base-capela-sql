@@ -1,6 +1,5 @@
 package com.lolmeida.resource;
 
-import com.lolmeida.Utils;
 import com.lolmeida.domain.translate.TranslateService;
 import com.lolmeida.dto.request.UserRequest;
 import com.lolmeida.dto.response.UserResponse;
@@ -20,7 +19,7 @@ import java.util.List;
 @RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UtilizadorResource {
+public class UserResource {
     @Inject
     UserService service;
 
@@ -31,12 +30,8 @@ public class UtilizadorResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-
-        List<UserResponse> data = service.findAll()
-                .stream()
-                .map(user -> translateService.translate(user, UserResponse.class))
-                .toList();
-        return Response.ok(data).build();
+        List<User> data = service.findAll();
+        return createResponse(data);
     }
 
     @GET
@@ -44,38 +39,37 @@ public class UtilizadorResource {
     public Response search(
             @PathParam("field") final String field,
             @PathParam("value") final String value) {
-        List<UserResponse> data = service.search( field, value)
-                .stream()
-                .map(user -> translateService.translate(user, UserResponse.class))
-                .toList();
-        return Response.ok(data).build();
+        List<User> data = service.search( field, value);
+        return createResponse(data);
     }
 
     @GET
     @Path("/{id}")
     public Response findByCustomer(@PathParam("id") final String id){
-        List<UserResponse> data = service.findBy(id)
-                .stream()
-                .map(user -> translateService.translate(user, UserResponse.class))
-                .toList();
-        return Response.ok(data).build();
+        List<User> data = service.findBy(id);
+        return createResponse(data);
     }
+
+
 
     @POST
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response save(@RequestBody UserRequest request) {
         service.save(translateService.translate(request, User.class));
-
         return Response
                 //.ok(service.search("id", service.save(requestToObj(request))))
                 .ok("requested")
                 .build();
     }
 
-    private User objToResponse (){
-        return translateService.translate(UserResponse.class, User.class);
-
+    private Response createResponse(List<User> data){
+        final List<UserResponse> list = data
+                .stream()
+                .map(entity -> translateService.translate(entity, UserResponse.class))
+                .toList();
+        return Response.ok(data).build();
     }
 
     private UserResponse requestToObj (){
