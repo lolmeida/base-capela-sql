@@ -6,7 +6,7 @@
 %}
 
 ## GET {{host}}{{app-capela-port}}/experience-themes/api/v1/themes
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+GET {{host}}{{app-capela-port}}/user
 bmw-gcid: {{bmw-gcid}}
 bmw-home-market: DE
 bmw-canary: true
