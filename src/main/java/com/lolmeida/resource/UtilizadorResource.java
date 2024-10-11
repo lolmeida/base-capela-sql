@@ -75,21 +75,6 @@ public class UtilizadorResource {
                 .Nome(request.Nome())
                 .Telefone(request.Telefone())
                 .Morada(request.Morada())
-                /*
-                .Assinatura(request.Assinatura())
-                .Previlegio(request.Previlegio())
-                .Perfil(request.Perfil())
-                .Clientes(request.Clientes())
-                .Recebimentos(request.Recebimentos())
-                .Cargas(request.Cargas())
-                .DiasEdicaoDocumento(request.DiasEdicaoDocumento())
-                .PrazoAnularEstadoDias(request.PrazoAnularEstadoDias())
-                .DiasEliminarDocumento(request.DiasEliminarDocumento())
-                .QtdMaxFactDivida(request.QtdMaxFactDivida())
-                .DiasMaxFactDivida(request.DiasMaxFactDivida())
-                .HojeMenosData(request.HojeMenosData())
-
-                 */
                 .build();
     }
 
@@ -111,24 +96,7 @@ public class UtilizadorResource {
                 .QtdMaxFactDivida(entity.getQtdMaxFactDivida())
                 .DiasMaxFactDivida(entity.getDiasMaxFactDivida())
                 .HojeMenosData(entity.getHojeMenosData())
-
-                // BaseEntity
                 .id(entity.getId())
-                /*
-                .active(entity.isActive())
-                .note(entity.getNote())
-                .description(entity.getDescription())
-                .attachment(entity.getAttachment())
-                .image(entity.getImage())
-                .createdBy(entity.getCreatedBy())
-                .createdAt(entity.getCreatedAt())
-                .createdTime(entity.getCreatedTime())
-                .updatedBy(entity.getUpdatedBy())
-                .updatedTime(entity.getUpdatedTime())
-                .updatedAt(entity.getUpdatedAt())
-                .date(entity.getDate())
-                 */
-
                 .build();
     }
 }
