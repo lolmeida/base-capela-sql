@@ -68,7 +68,7 @@ public class UtilizadorResource {
         service.save(translateService.translate(request, User.class));
 
         return Response
-                //.ok(service.search("Mail", service.save(requestToObj(request))))
+                //.ok(service.search("id", service.save(requestToObj(request))))
                 .ok("requested")
                 .build();
     }

@@ -1,0 +1,8 @@
+### GET - Get UsersByFieldLike
+
+GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/address/Listal
+bmw-gcid: {{bmw-gcid}}
+bmw-home-market: DE
+bmw-canary: true
+
+> ../scripts/assertEqualResponse.js
