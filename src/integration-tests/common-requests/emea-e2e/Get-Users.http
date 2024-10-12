@@ -2,8 +2,6 @@
 
 
 GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
-bmw-gcid: {{bmw-gcid}}
-bmw-home-market: DE
-bmw-canary: true
+content-type: application/json
 
 #> ../scripts/assertEqualResponse.js

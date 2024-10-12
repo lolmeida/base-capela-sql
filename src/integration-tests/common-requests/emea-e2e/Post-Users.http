@@ -1,8 +1,8 @@
 ### POST - Add User
 
 POST {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
-bmw-canary: {{bmw-canary}}
-Authorization: {{authorization}}
+#bmw-canary: {{bmw-canary}}
+#Authorization: {{authorization}}
 Content-Type: application/json
 
 {

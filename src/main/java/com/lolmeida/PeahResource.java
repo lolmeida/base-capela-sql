@@ -43,15 +43,13 @@ public interface PeahResource<T> {
 
     @POST
     @Path("/")
-    @Transactional
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    Response save(
+    Response add(
             @RequestBody UserRequest request);
 
     @PUT
     @Path("/{id}")
-    @Transactional
     @Produces(MediaType.APPLICATION_JSON)
     public Response updadte(
             @RequestBody
@@ -61,7 +59,6 @@ public interface PeahResource<T> {
 
     @DELETE
     @Path("/{id}")
-    @Transactional
     @Produces(MediaType.APPLICATION_JSON)
     Response delete(
             @PathParam("id")

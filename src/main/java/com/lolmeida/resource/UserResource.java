@@ -45,7 +45,7 @@ public class UserResource implements PeahResource {
 
 
     @Override
-    public Response save(final UserRequest request) {
+    public Response add(final UserRequest request) {
         return Response.ok(service.add(request)).build();
     }
 
