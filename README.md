@@ -50,7 +50,8 @@ Run the following Maven command to build your Quarkus application and create a D
 ./mvnw clean package
 ```
 
-Build and Push the Docker image:
+[Build and Push the Docker image:](https://github.com/GoogleContainerTools/jib/blob/master/jib-maven-plugin/README.md)
+
 After packaging the application, use the Jib plugin to build the image and push it to Docker Hub:
 ```shell script
 mvn compile jib:build
