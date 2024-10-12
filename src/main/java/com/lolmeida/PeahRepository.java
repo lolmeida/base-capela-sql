@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 import com.lolmeida.domain.entity.database.User;
+import com.lolmeida.dto.request.UserRequest;
 
 public interface PeahRepository<T> {
 
@@ -17,9 +18,14 @@ public interface PeahRepository<T> {
     List<T> find(final String id);
 
     @Transactional
-    Object deleteby(final User entity);
+    User add(final UserRequest entity);
 
     @Transactional
-    String save(T entity);
+    String update(final UserRequest request,final String id);
+
+    @Transactional
+    String delete(final String id);
+
+
 
 }

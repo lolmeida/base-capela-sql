@@ -4,12 +4,8 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import com.lolmeida.PeahResource;
 import com.lolmeida.domain.entity.database.User;
@@ -47,73 +43,25 @@ public class UserResource implements PeahResource {
         return translateService.createResponse(data, UserResponse.class);
     }
 
-    @Override
-    public void deleteby(final Object request) {
-
-    }
-
 
     @Override
-    public void deleteby(final User entity) {
-         Response.ok(service.deleteby(entity)).build();
+    public Response save(final UserRequest request) {
+        return Response.ok(service.add(request)).build();
+    }
+
+    @Override
+    public Response updadte(final UserRequest request, final String id) {
+        return Response.ok(
+                service.update(request, id)
+        ).build();
+    }
+
+    @Override
+    public Response delete(final String id) {
+        return Response.ok(
+                service.delete(id)
+        ).build();
     }
 
 
-
-
-
-
-
-
-
-
-
-
-    @POST
-    @Path("/")
-    public Response save(
-            @RequestBody UserRequest request
-    ) {
-        //service.save(translateService.translate(request, User.class));
-        return Response
-                .ok("requested")
-                .build();
-    }
-
-
-
-
-
-
-
-
-
-
-
- /*   @POST
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response save(@RequestBody UserRequest request) {
-        //service.save(translateService.translate(request, User.class));
-        return Response
-                //.ok(service.search("id", service.save(requestToObj(request))))
-                .ok("requested")
-                .build();
-    }*/
-
-
-
-   /* private Response createResponse(List<User> data){
-        final List<UserResponse> list = data
-                .stream()
-                .map(entity -> translateService.translate(entity, UserResponse.class))
-                .toList();
-        return Response.ok(data).build();
-    }*/
-
-    private UserResponse requestToObj() {
-        return translateService.translate(User.class, UserResponse.class);
-
-    }
 }

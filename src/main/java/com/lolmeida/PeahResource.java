@@ -2,8 +2,11 @@ package com.lolmeida;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -12,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-import com.lolmeida.domain.entity.database.User;
+import com.lolmeida.dto.request.UserRequest;
 
 @RequestScoped
 @Path("/user")
@@ -38,17 +41,30 @@ public interface PeahResource<T> {
             @PathParam("id")
             final String id);
 
+    @POST
+    @Path("/")
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response save(
+            @RequestBody UserRequest request);
+
+    @PUT
+    @Path("/{id}")
+    @Transactional
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updadte(
+            @RequestBody
+            UserRequest request,
+            @PathParam("id")
+            final String id);
+
     @DELETE
     @Path("/{id}")
     @Transactional
-    void deleteby(
-            @RequestBody T request);
-
-    void deleteby(User entity);
-
-   /* @POST
-    @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response save(@RequestBody T request);*/
+    Response delete(
+            @PathParam("id")
+            final String id);
 
 }

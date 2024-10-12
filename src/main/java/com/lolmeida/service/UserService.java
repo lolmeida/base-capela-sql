@@ -2,16 +2,21 @@ package com.lolmeida.service;
 
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.PeahRepository;
+import com.lolmeida.domain.translate.TranslateService;
+import com.lolmeida.dto.request.UserRequest;
 import com.lolmeida.repository.UserRepository;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequestScoped
 public class UserService implements PeahRepository<User> {
     @Inject
     UserRepository repository;
+    @Inject
+    TranslateService translateService;
 
     @Override
     public List<User> findAll(String... orderByColumns){
@@ -28,14 +33,36 @@ public class UserService implements PeahRepository<User> {
         return repository.find(id);
     }
 
+
+
+
+
+
+
+
     @Override
-    public Object deleteby( User entity) {
-         repository.delete(entity);
-        return null;
+    public User add(final UserRequest entity) {
+        return repository.add(entity);
     }
 
     @Override
-    public String save(User entity) {
-        return repository.save(entity);
+    public String update( final UserRequest request,final String id) {
+        final Optional<User> data = repository.find(id).stream().findFirst();
+        if(data.isPresent()){
+            repository.update(request, id);
+            return "User updated";
+        }
+        return "User not found";
+
+    }
+
+    @Override
+    public String delete( final String id) {
+        final Optional<User> data = repository.find(id).stream().findFirst();
+        if(data.isPresent()){
+            repository.delete(id);
+            return "User deleted";
+        }
+        return "User not found";
     }
 }
