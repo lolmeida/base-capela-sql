@@ -8,8 +8,8 @@ import jakarta.inject.Inject;
 
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.domain.translate.TranslateService;
-import com.lolmeida.dto.response.UserResponse;
-import com.lolmeida.service.UserService;
+import com.lolmeida.api.dto.response.UserResponse;
+import com.lolmeida.domain.service.UserService;
 
 
 /**

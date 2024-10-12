@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="14" name="IntelliJ IDEA HTTP Client">
+  <testsuite tests="2" name="Get-HealthCheck" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Health_Check" name="Response" time="0.368" />
+    <testcase classname="http.GET_-_Health_Check" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Get-AllUsers" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Get_Users" name="Response" time="0.061" />
+    <testcase classname="http.GET_-_Get_Users" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Get-UserById" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Get_UsersById" name="Response" time="0.054" />
+    <testcase classname="http.GET_-_Get_UsersById" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Get-UsersByFieldLike" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Get_UsersByFieldLike" name="Response" time="0.057" />
+    <testcase classname="http.GET_-_Get_UsersByFieldLike" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Post-User" failures="0" errors="0" skip="0">
+    <testcase classname="http.POST_-_Add_User" name="Response" time="0.009" />
+    <testcase classname="http.POST_-_Add_User" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Put-UserById" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Get_UsersById" name="Response" time="0.005" />
+    <testcase classname="http.GET_-_Get_UsersById" name="Response Handler" time="0.0" />
+  </testsuite>
+  <testsuite tests="2" name="Delete-UserById" failures="0" errors="0" skip="0">
+    <testcase classname="http.GET_-_Get_UsersById" name="Response" time="0.054" />
+    <testcase classname="http.GET_-_Get_UsersById" name="Response Handler" time="0.0" />
+  </testsuite>
+</testsuites>
+

@@ -1,4 +1,4 @@
-package com.lolmeida;
+package com.lolmeida.api;
 
 
 import java.time.LocalDateTime;

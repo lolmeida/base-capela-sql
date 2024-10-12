@@ -1,16 +1,12 @@
 package com.lolmeida.domain.translate.request;
 
-import java.time.Instant;
-import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.lolmeida.domain.entity.database.User;
-import com.lolmeida.dto.request.UserRequest;
+import com.lolmeida.api.dto.request.UserRequest;
 
 
 /**

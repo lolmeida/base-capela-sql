@@ -1,11 +1,11 @@
-package com.lolmeida;
+package com.lolmeida.api;
 
 import java.util.List;
 
 import jakarta.transaction.Transactional;
 
 import com.lolmeida.domain.entity.database.User;
-import com.lolmeida.dto.request.UserRequest;
+import com.lolmeida.api.dto.request.UserRequest;
 
 public interface PeahRepository<T> {
 

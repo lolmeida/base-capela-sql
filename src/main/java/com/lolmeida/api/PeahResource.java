@@ -1,7 +1,6 @@
-package com.lolmeida;
+package com.lolmeida.api;
 
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -15,11 +14,12 @@ import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
-import com.lolmeida.dto.request.UserRequest;
+import com.lolmeida.api.dto.request.UserRequest;
 
 @RequestScoped
 @Path("/user")
-@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+@Produces({MediaType.APPLICATION_JSON})
+@Consumes({MediaType.APPLICATION_JSON})
 public interface PeahResource<T> {
 
     @GET
@@ -29,6 +29,7 @@ public interface PeahResource<T> {
 
     @GET
     @Path("/search/{field}/{value}")
+    @Produces({MediaType.APPLICATION_JSON})
     Response search(
             @PathParam("field")
             final String field,
@@ -37,21 +38,21 @@ public interface PeahResource<T> {
 
     @GET
     @Path("/{id}")
+    @Produces({MediaType.APPLICATION_JSON})
     Response find(
             @PathParam("id")
             final String id);
 
     @POST
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response add(
             @RequestBody UserRequest request);
 
     @PUT
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updadte(
+    @Consumes(MediaType.APPLICATION_JSON)
+    Response updadte(
             @RequestBody
             UserRequest request,
             @PathParam("id")
@@ -59,7 +60,7 @@ public interface PeahResource<T> {
 
     @DELETE
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     Response delete(
             @PathParam("id")
             final String id);

@@ -1,4 +1,4 @@
-package com.lolmeida.dto.response;
+package com.lolmeida.api.dto.response;
 
 import lombok.Builder;
 

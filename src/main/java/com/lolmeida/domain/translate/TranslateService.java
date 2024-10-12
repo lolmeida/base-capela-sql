@@ -16,8 +16,8 @@ import jakarta.ws.rs.core.Response;
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.domain.translate.request.UserRequestTranslate;
 import com.lolmeida.domain.translate.response.UserResponseTranslate;
-import com.lolmeida.dto.request.UserRequest;
-import com.lolmeida.dto.response.UserResponse;
+import com.lolmeida.api.dto.request.UserRequest;
+import com.lolmeida.api.dto.response.UserResponse;
 
 /**
  * Service to convert cache objects to our DTOs. This class holds a register for all the possible translations. According to the
@@ -94,6 +94,8 @@ public class TranslateService {
                 .stream()
                 .map(entity -> this.translate(entity, responseType))
                 .toList();
-        return Response.ok(list).build();
+        return Response
+                .ok(list)
+                .build();
     }
 }

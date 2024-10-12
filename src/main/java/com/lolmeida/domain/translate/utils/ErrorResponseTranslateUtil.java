@@ -2,7 +2,7 @@ package com.lolmeida.domain.translate.utils;
 
 
 import com.lolmeida.domain.entity.RequestDetail;
-import com.lolmeida.dto.response.ApiErrorResponse;
+import com.lolmeida.api.dto.response.ApiErrorResponse;
 
 /**
  * Utility class to translate common properties from {@link RequestDetail} to our own error response implementations.

@@ -1,10 +1,10 @@
-package com.lolmeida.service;
+package com.lolmeida.domain.service;
 
 import com.lolmeida.domain.entity.database.User;
-import com.lolmeida.PeahRepository;
+import com.lolmeida.api.PeahRepository;
 import com.lolmeida.domain.translate.TranslateService;
-import com.lolmeida.dto.request.UserRequest;
-import com.lolmeida.repository.UserRepository;
+import com.lolmeida.api.dto.request.UserRequest;
+import com.lolmeida.domain.repository.UserRepository;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 

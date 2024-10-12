@@ -1,0 +1,10 @@
+### GET - Get UsersById
+
+PUT {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/sdrFsert3h
+
+{
+    "mail":"lou@ren.co",
+    "name":"Lourenço Almeida",
+    "phoneNumber":"987098034",
+    "address":"Listal-Sud"
+}

@@ -1,0 +1,11 @@
+### POST - Add User
+
+POST {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+Content-Type: application/json
+
+{
+    "mail": "lou@ren.co",
+    "name": "Lourenço",
+    "phoneNumber": "987 0980 34",
+    "address": "Listal"
+}

@@ -1,17 +1,15 @@
 package com.lolmeida.domain.entity;
 
-import com.lolmeida.Utils;
+import com.lolmeida.api.Utils;
 
 
 
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Version;
 
 import lombok.*;
 

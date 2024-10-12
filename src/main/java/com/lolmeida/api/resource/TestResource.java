@@ -1,4 +1,4 @@
-package com.lolmeida.resource;
+package com.lolmeida.api.resource;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;

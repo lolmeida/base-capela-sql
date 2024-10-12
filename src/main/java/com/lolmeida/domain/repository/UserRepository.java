@@ -1,9 +1,9 @@
-package com.lolmeida.repository;
+package com.lolmeida.domain.repository;
 
-import com.lolmeida.PeahRepository;
+import com.lolmeida.api.PeahRepository;
 import com.lolmeida.domain.entity.database.User;
 import com.lolmeida.domain.translate.TranslateService;
-import com.lolmeida.dto.request.UserRequest;
+import com.lolmeida.api.dto.request.UserRequest;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Sort;

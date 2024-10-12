@@ -1,4 +1,4 @@
-package com.lolmeida.dto.request;
+package com.lolmeida.api.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
