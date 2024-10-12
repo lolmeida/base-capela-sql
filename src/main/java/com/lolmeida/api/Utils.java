@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Random;
 
+import com.lolmeida.domain.entity.database.User;
+
 public  class Utils {
     public static long currentTime = System.currentTimeMillis(); //Instant.now().toEpochMilli();
     public static LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("UTC"));
@@ -24,5 +26,17 @@ public  class Utils {
 
     public static String activeUser() {
         return "lolmeida@gmail.com";
+    }
+
+
+    public static User createUser() {
+        return User
+                .builder()
+                .id("1")
+                .name("Lolmeida")
+                .mail("lou@nas.val")
+                .phoneNumber("123456789")
+                .address("Rua do Loureiro")
+                .build();
     }
 }
