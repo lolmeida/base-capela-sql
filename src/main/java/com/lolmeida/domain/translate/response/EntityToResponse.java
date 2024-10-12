@@ -16,7 +16,7 @@ import com.lolmeida.domain.service.UserService;
  * Translates {@link User} DTO object to {@link UserResponse} DTO object.
  */
 @ApplicationScoped
-public class UserResponseTranslate implements Function<User, UserResponse> {
+public class EntityToResponse implements Function<User, UserResponse> {
 
     /**
      * Translate Service.
@@ -46,4 +46,15 @@ public class UserResponseTranslate implements Function<User, UserResponse> {
                 .address(user.getAddress())
                 .build();
     }
+
+    /*
+        private Set<ClientVersionsResponse> applyClientVersionsTranslate(final Set<ClientVersions> clientVersionsList) {
+        return Optional.ofNullable(clientVersionsList)
+                .map(list -> list.stream()
+                        .map(clientVersions -> translateService.translate(clientVersions,
+                                ClientVersionsResponse.class))
+                        .collect(Collectors.toSet()))
+                .orElseGet(Collections::emptySet);
+    }
+     */
 }

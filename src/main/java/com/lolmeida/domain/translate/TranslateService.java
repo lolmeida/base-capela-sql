@@ -14,8 +14,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 import com.lolmeida.domain.entity.database.User;
-import com.lolmeida.domain.translate.request.UserRequestTranslate;
-import com.lolmeida.domain.translate.response.UserResponseTranslate;
+import com.lolmeida.domain.translate.request.RequestToEntity;
+import com.lolmeida.domain.translate.response.EntityToResponse;
 import com.lolmeida.api.dto.request.UserRequest;
 import com.lolmeida.api.dto.response.UserResponse;
 
@@ -30,13 +30,10 @@ public class TranslateService {
      * Injected instance of userResponseTranslate.
      */
     @Inject
-    UserResponseTranslate userResponseTranslate;
-
-    /**
-     * Injected instance of userRequestTranslate.
-     */
+    EntityToResponse entityToResponse;
     @Inject
-    UserRequestTranslate userRequestTranslate;
+    RequestToEntity requestToEntity;
+
 
     @SuppressWarnings("rawtypes")
     private Map<BiPredicate<Object, Class<?>>, Function> translatorCatalogue;
@@ -46,8 +43,9 @@ public class TranslateService {
     void init() {
         final Map<BiPredicate<Object, Class<?>>, Function> translatorsMap = new HashMap<>();
         //USER:
-        translatorsMap.put(getTranslatePredicate(UserRequest.class, User.class), userRequestTranslate);
-        translatorsMap.put(getTranslatePredicate(User.class, UserResponse.class), userResponseTranslate);
+        translatorsMap.put(getTranslatePredicate(UserRequest.class, User.class), requestToEntity);
+        translatorsMap.put(getTranslatePredicate(User.class, UserResponse.class), entityToResponse);
+
 
         translatorCatalogue = Collections.unmodifiableMap(translatorsMap);
     }

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Random;
 
+import com.lolmeida.api.dto.request.UserRequest;
 import com.lolmeida.domain.entity.database.User;
 
 public  class Utils {
@@ -37,6 +38,16 @@ public  class Utils {
                 .mail("lou@nas.val")
                 .phoneNumber("123456789")
                 .address("Rua do Loureiro")
+                .build();
+    }
+
+    public static UserRequest createUserRequest() {
+        return UserRequest
+                .builder()
+                .name("Antonio")
+                .mail("an@to.nio")
+                .phoneNumber("33455553")
+                .address("Rua do Uau")
                 .build();
     }
 }

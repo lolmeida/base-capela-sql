@@ -13,16 +13,27 @@ import com.lolmeida.api.dto.request.UserRequest;
  * Translates {@link UserRequest} DTO object to {@link User} DTO object.
  */
 @ApplicationScoped
-public class UserRequestTranslate implements Function<UserRequest, User> {
+public class RequestToEntity implements Function<UserRequest, User> {
 
     @Override
-    public User apply(final UserRequest UserRequest) {
-        return Optional.ofNullable(UserRequest)
+    public User apply(final UserRequest request) {
+        return Optional.ofNullable(request)
                 .map(this::buildResponse)
                 .orElse(null);
     }
 
-/*    private Set<Label> applyLabelsTranslate(final Set<LabelThemeRequest> labelsList) {
+    private User buildResponse(final UserRequest request) {
+        return User.builder()
+                .name(request.name())
+                .mail(request.mail())
+                .phoneNumber(request.phoneNumber())
+                .address(request.address())
+                .build();
+    }
+
+
+
+    /*    private Set<Label> applyLabelsTranslate(final Set<LabelThemeRequest> labelsList) {
         return Optional.ofNullable(labelsList)
                 .map(list -> list.stream()
                         .map(labels -> translateService.translate(labels,
@@ -30,13 +41,4 @@ public class UserRequestTranslate implements Function<UserRequest, User> {
                         .collect(Collectors.toSet()))
                 .orElseGet(Collections::emptySet);
     }*/
-
-    private User buildResponse(final UserRequest userRequest) {
-        return User.builder()
-                .name(userRequest.name())
-                .mail(userRequest.mail())
-                .phoneNumber(userRequest.phoneNumber())
-                .address(userRequest.address())
-                .build();
-    }
 }

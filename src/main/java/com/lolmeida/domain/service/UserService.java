@@ -41,8 +41,8 @@ public class UserService implements PeahRepository<User> {
 
 
     @Override
-    public User add(final UserRequest entity) {
-        return repository.add(entity);
+    public User add(final UserRequest request) {
+        return repository.add(request);
     }
 
     @Override

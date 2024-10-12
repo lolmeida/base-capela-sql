@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class UserResourceTest {
 
     @Mock
-    private UserService userService;
+    private UserService service;
 
     @Mock
     private TranslateService translateService;
@@ -38,74 +38,72 @@ public class UserResourceTest {
     @InjectMocks
     private UserResource userResource;
 
-    private User user;
-    private UserRequest userRequest;
-    private UserResponse userResponse;
+    private User entity;
+    private UserRequest request;
 
     @BeforeEach
     public void setUp() {
-        user = Utils.createUser();
-        userRequest = translateService.translate(user, UserRequest.class);
-        userResponse = translateService.translate(user, UserResponse.class);
+        entity = Utils.createUser();
+        request = Utils.createUserRequest();
     }
 
     @Test
     public void testGetAll() {
-        List<User> users = Collections.singletonList(user);
-        when(userService.findAll()).thenReturn(users);
+        List<User> users = Collections.singletonList(entity);
+        when(service.findAll()).thenReturn(users);
         when(translateService.createResponse(users, UserResponse.class)).thenReturn(Response.ok(users).build());
 
         Response response = userResource.getAll();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).findAll();
+        verify(service, times(1)).findAll();
         verify(translateService, times(1)).createResponse(users, UserResponse.class);
     }
 
     @Test
     public void testSearch() {
-        List<User> users = Collections.singletonList(user);
-        when(userService.search("field", "value")).thenReturn(users);
+        List<User> users = Collections.singletonList(entity);
+        when(service.search("field", "value")).thenReturn(users);
         when(translateService.createResponse(users, UserResponse.class)).thenReturn(Response.ok(users).build());
 
         Response response = userResource.search("field", "value");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).search("field", "value");
+        verify(service, times(1)).search("field", "value");
         verify(translateService, times(1)).createResponse(users, UserResponse.class);
     }
 
     @Test
     public void testFind() {
-        List<User> users = Collections.singletonList(user);
-        when(userService.find("id")).thenReturn(users);
+        List<User> users = Collections.singletonList(entity);
+        when(service.find("id")).thenReturn(users);
         when(translateService.createResponse(users, UserResponse.class)).thenReturn(Response.ok(users).build());
 
         Response response = userResource.find("id");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).find("id");
+        verify(service, times(1)).find("id");
         verify(translateService, times(1)).createResponse(users, UserResponse.class);
     }
 
     @Test
     public void testAdd() {
-        when(userService.add(userRequest)).thenReturn(user);
-        Response response = userResource.add(userRequest);
+        when(service.add(request)).thenReturn(entity);
+        Response response = userResource.add(request);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).add(userRequest);
+        verify(service, times(1)).add(request);
     }
 
     @Test
     public void testUpdate() {
-        when(userService.update(userRequest, "id")).thenReturn(String.valueOf(user));
-        Response response = userResource.updadte(userRequest, "id");
+        when(service.update(request, "id")).thenReturn(String.valueOf(entity));
+        Response response = userResource.updadte(request, "id");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).update(userRequest, "id");
+        verify(service, times(1)).update(request, "id");
     }
 
     @Test
     public void testDelete() {
-        when(userService.delete("id")).thenReturn(String.valueOf(user));
+        when(service.delete("id")).thenReturn(String.valueOf(entity));
         Response response = userResource.delete("id");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(userService, times(1)).delete("id");
+        verify(service, times(1)).delete("id");
     }
 }
