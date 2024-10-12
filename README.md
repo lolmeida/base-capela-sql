@@ -43,6 +43,19 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
+
+Package your application:
+Run the following Maven command to build your Quarkus application and create a Docker image using Jib:
+```shell script
+./mvnw clean package
+```
+
+Build and Push the Docker image:
+After packaging the application, use the Jib plugin to build the image and push it to Docker Hub:
+```shell script
+mvn compile jib:build
+```
+
 You can then execute your native executable with: `./target/base-capela-sql-app-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.

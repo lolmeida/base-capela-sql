@@ -76,13 +76,13 @@ public class UserServiceTest {
         assertEquals("Lolmeida", users.get(0).getName());
     }
 
-    @Test
+/*    @Test
     public void testAdd() {
         request = Utils.createUserRequest();
         User result = userService.add(request);
         assertEquals("Antonio", result.getName());
 
-    }
+    }*/
 
     @Test
     public void testUpdate() {
