@@ -1,6 +1,6 @@
 ### GET - Get UsersById
 
-DELETE {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/sdrFsert3h
+DELETE {{host}}{{app-capela-port}}/cargo/api/v1/user/sdrFsert3h
 content-type: application/json
 
 #> ../scripts/assertEqualResponse.js

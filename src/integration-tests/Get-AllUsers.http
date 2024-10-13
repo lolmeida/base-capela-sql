@@ -1,7 +1,7 @@
 ### GET - Get Users
 
 
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+GET {{host}}{{app-capela-port}}/cargo/api/v1/user
 content-type: application/json
 
 #> ../scripts/assertEqualResponse.js

@@ -1,6 +1,6 @@
 ### GET - Get UsersByFieldLike
 
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/search/address/Listal
+GET {{host}}{{app-capela-port}}/cargo/api/v1/user/search/address/Listal
 content-type: application/json
 
 #> ../scripts/assertEqualResponse.js

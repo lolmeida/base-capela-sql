@@ -1,6 +1,6 @@
 ### POST - Add User
 
-POST {{host}}{{app-capela-port}}/nc-cargas/api/v1/user
+POST {{host}}{{app-capela-port}}/cargo/api/v1/user
 Content-Type: application/json
 
 {

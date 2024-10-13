@@ -1,5 +1,5 @@
 ### GET - Health Check
 
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/health-check
+GET {{host}}{{app-capela-port}}/cargo/api/v1/health-check
 
 > ./scripts/Get-HealthCheck.js

@@ -1,6 +1,6 @@
 ### GET - Get UsersById
 
-GET {{host}}{{app-capela-port}}/nc-cargas/api/v1/user/madalena
+GET {{host}}{{app-capela-port}}/cargo/api/v1/user/madalena
 content-type: application/json
 
 #> ../scripts/assertEqualResponse.js
