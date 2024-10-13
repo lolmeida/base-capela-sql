@@ -22,7 +22,8 @@ jobs:
       - name: Test secret access
         run: echo "The secret is accessed but not shown for security reasons"
         env:
-          MY_SECRET: ${{ secrets.DOCKER_HUB_USERNAME }}
+          MY_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
+          MY_PASS: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Log in to Docker Hub
         run: |
@@ -33,5 +34,5 @@ jobs:
       - name: Build and push Docker image with Jib
         run: ./mvnw compile jib:build \
           -Djib.to.image=${{ secrets.DOCKER_HUB_USERNAME }}/quarkus-app:${{ github.sha }} \
-          -Djib.to.auth.username=${{ secrets.DOCKER_HUB_USERNAME }} \
-          -Djib.to.auth.password=${{ secrets.DOCKER_HUB_PASSWORD }}
+          -Djib.to.auth.username=lolmeida \
+          -Djib.to.auth.password=L0#nasval
