@@ -21,6 +21,8 @@ jobs:
 
       - name: Log in to Docker Hub
         run: |
+          echo ${{ secrets.DOCKER_HUB_PASSWORD }} 
+          echo ${{ secrets.DOCKER_HUB_USERNAME }}
           docker login -u ${{ secrets.DOCKER_HUB_PASSWORD }} -p ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Build and push Docker image with Jib
