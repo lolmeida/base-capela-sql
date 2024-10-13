@@ -20,6 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Setup Docker Hub & Publish Quarkus Image
         uses: lolmeida/peah-pipelines-templates/.github/actions/publish-dockerhub-image@main
 
