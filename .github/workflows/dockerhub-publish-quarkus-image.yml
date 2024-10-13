@@ -19,6 +19,11 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
+      - name: Check secrets
+        run: |
+          if [[ -z "${{ secrets.DOCKER_USERNAME }}" ]]; then echo "DOCKER_USERNAME is empty"; fi
+          if [[ -z "${{ secrets.DOCKER_PASSWORD }}" ]]; then echo "DOCKER_PASSWORD is empty"; fi
+
       - name: Test secret access
         run: echo "The secret is accessed but not shown for security reasons"
         env:
