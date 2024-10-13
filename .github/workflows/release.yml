@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: TRM Utils
         id: utils
-        uses: lolmeida/peah-pipelines-templates/actions/utils@main
+        uses: peah-pipelines-templates/actions/utils@main
         with:
           is-action-call: true
           hub: ${{ inputs.hub || 'emea' }}
@@ -89,7 +89,7 @@ jobs:
           aws sts get-caller-identity
 
       - name: Get Values from Parameter Store
-        uses: lolmeida/peah-pipelines-templates/actions/aws-ssm@main
+        uses: peah-pipelines-templates/actions/aws-ssm@main
         with:
           parameters: |
             ATC_USER,/lolmeida/technical-user/username
@@ -98,7 +98,7 @@ jobs:
 
       - name: Get Next Version
         id: semver
-        uses: lolmeida/peah-pipelines-templates/actions/semver@main
+        uses: peah-pipelines-templates/actions/semver@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref || github.ref_name }}
@@ -137,7 +137,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: lolmeida/peah-pipelines-templates/actions/gh-release@main
+        uses: peah-pipelines-templates/actions/gh-release@main
         with:
           token: ${{ secrets.TECHNICAL_USER_TOKEN }}
           tag_name: ${{ steps.semver.outputs.nextStrict }}
@@ -145,7 +145,7 @@ jobs:
           name: Release ${{ steps.semver.outputs.nextStrict }}
 
       - name: Publish release notes on Confluence
-        uses: lolmeida/peah-pipelines-templates/actions/publish-release-notes-confluence@main
+        uses: peah-pipelines-templates/actions/publish-release-notes-confluence@main
         with:
           username: ${{ env.ATC_USER }}
           password: ${{ env.ATC_PASSWORD }}
@@ -155,7 +155,7 @@ jobs:
           jira-issues: ${{ steps.create_release.outputs.jira_issues }}
 
       - name: Re Tag ECR Image
-        uses: lolmeida/peah-pipelines-templates/actions/re-tag-image@main
+        uses: peah-pipelines-templates/actions/re-tag-image@main
         with:
           aws-region: ${{ steps.utils.outputs.region_global_resources_row }}
           aws-role: ${{ steps.utils.outputs.role_arn_global_resources_row }}

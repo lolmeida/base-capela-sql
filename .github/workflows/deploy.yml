@@ -151,7 +151,7 @@ jobs:
     steps:
       - name: TRM Utils
         id: utils
-        uses: lolmeida/peah-pipelines-templates/actions/utils@main
+        uses: peah-pipelines-templates/actions/utils@main
         with:
           hub: ${{ inputs.hub || 'emea' }}
           env: ${{ inputs.environment || 'test' }}
@@ -176,7 +176,7 @@ jobs:
 
       - name: Setup
         id: setup
-        uses: lolmeida/peah-pipelines-templates/actions/setup@main
+        uses: peah-pipelines-templates/actions/setup@main
         with:
           overwrite-settings: true
           settings-server-id: artifactory
@@ -191,7 +191,7 @@ jobs:
 
       - name: Get TAG
         id: tag
-        uses: lolmeida/peah-pipelines-templates/actions/generate-tag@main
+        uses: peah-pipelines-templates/actions/generate-tag@main
         with:
           git-ref: ${{ steps.utils.outputs.git_ref }}
           date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
@@ -199,7 +199,7 @@ jobs:
 
       - name: Get secrets from Parameter Store
         id: get_service_secrets_from_parameter_store
-        uses: lolmeida/peah-pipelines-templates/actions/aws-ssm@main
+        uses: peah-pipelines-templates/actions/aws-ssm@main
         with:
           parameters: |
             JAVA_TRUSTSTORE_PASSWORD,/ices/trm/signing_service/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/truststore-password
@@ -213,7 +213,7 @@ jobs:
       - name: Get contrast secrets from Parameter Store
         id: get_contrast_secrets_from_parameter_store
         if: steps.utils.outputs.hub == 'emea' && steps.utils.outputs.env == 'e2e'
-        uses: lolmeida/peah-pipelines-templates/actions/aws-ssm@main
+        uses: peah-pipelines-templates/actions/aws-ssm@main
         with:
           parameters: |
             CONTRAST_API_USER_NAME,/ices/trm/contrast/sep/userName
@@ -223,7 +223,7 @@ jobs:
 
       - name: Config MemoryDB
         id: memory_db
-        uses: lolmeida/peah-pipelines-templates/actions/config-memorydb@main
+        uses: peah-pipelines-templates/actions/config-memorydb@main
         with:
           aws-region: ${{ steps.utils.outputs.region }}
           hub: ${{ steps.utils.outputs.hub }}
@@ -237,7 +237,7 @@ jobs:
 
       - name: Generate and Publish Quarkus Image
         id: generate_and_publish_quarkus_image
-        uses: lolmeida/peah-pipelines-templates/actions/publish-quarkus-image@main
+        uses: peah-pipelines-templates/actions/publish-quarkus-image@main
         with:
           aws-region: ${{ steps.utils.outputs.region_global_resources }}
           aws-role: ${{ steps.utils.outputs.role_arn_global_resources }}
@@ -254,7 +254,7 @@ jobs:
       - name: Run most common requests before deploy
         id: most_common_requests_before_deploy
         if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
-        uses: lolmeida/peah-pipelines-templates/actions/common-requests@main
+        uses: peah-pipelines-templates/actions/common-requests@main
         with:
           hub: ${{ steps.utils.outputs.hub }}
           environment: ${{ steps.utils.outputs.env }}
@@ -264,7 +264,7 @@ jobs:
 
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
-        uses: lolmeida/peah-pipelines-templates/actions/helm@main
+        uses: peah-pipelines-templates/actions/helm@main
         with:
           aws-region: ${{ steps.utils.outputs.region }}
           aws-role: ${{ steps.utils.outputs.role_arn_eks }}
@@ -294,7 +294,7 @@ jobs:
       - name: Run most common requests after deploy
         id: most_common_requests_after_deploy
         if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
-        uses: lolmeida/peah-pipelines-templates/actions/common-requests@main
+        uses: peah-pipelines-templates/actions/common-requests@main
         with:
           hub: ${{ steps.utils.outputs.hub }}
           environment: ${{ steps.utils.outputs.env }}
@@ -305,7 +305,7 @@ jobs:
       - name: Integration Tests
         id: integration_tests
         if: ${{ fromJSON(env.INTEGRATION_TESTS) }}
-        uses: lolmeida/peah-pipelines-templates/actions/integration-tests@main
+        uses: peah-pipelines-templates/actions/integration-tests@main
         with:
           hub: ${{ steps.utils.outputs.hub }}
           environment: ${{ steps.utils.outputs.env }}
@@ -322,7 +322,7 @@ jobs:
       - name: Publish Release notes to confluence
         id: publish_release_notes_to_confluence
         if: contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env) && !inputs.canary-deploy
-        uses: lolmeida/peah-pipelines-templates/actions/publish-release-confluence@main
+        uses: peah-pipelines-templates/actions/publish-release-confluence@main
         with:
           username: ${{ secrets.TECHNICAL_USER_USERNAME }}
           password: ${{ secrets.TECHNICAL_USER_PASSWORD }}
@@ -335,7 +335,7 @@ jobs:
 
       - name: Generate token
         id: generate-token
-        uses: lolmeida/peah-pipelines-templates/actions/token-generator@main
+        uses: peah-pipelines-templates/actions/token-generator@main
         with:
           private-key: ${{ env.PRIVATE_RSA_KEY }}
           subject: "SMOKE_TESTS"
@@ -363,7 +363,7 @@ jobs:
 
       - name: Remove Canary
         id: remove_canary
-        uses: lolmeida/peah-pipelines-templates/actions/helm-uninstall@main
+        uses: peah-pipelines-templates/actions/helm-uninstall@main
         with:
           aws-region: ${{ steps.utils.outputs.region }}
           aws-role: ${{ steps.utils.outputs.role_arn_eks }}
@@ -378,7 +378,7 @@ jobs:
       - name: Notification deploy
         id: notification_deploy
         if: always() && steps.deploy.conclusion == 'success' && contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env)
-        uses: lolmeida/peah-pipelines-templates/actions/teams-notification-deploy@main
+        uses: peah-pipelines-templates/actions/teams-notification-deploy@main
         with:
           service: ${{ env.SERVICE_NAME }}
           hub: ${{ steps.utils.outputs.hub }}
@@ -389,7 +389,7 @@ jobs:
 
       - name: Fail Notification
         if: failure() && steps.utils.outputs.env != 'test'
-        uses: lolmeida/peah-pipelines-templates/actions/teams-notification-fail@main
+        uses: peah-pipelines-templates/actions/teams-notification-fail@main
         with:
           hub: ${{ steps.utils.outputs.hub }}
           env: ${{ steps.utils.outputs.env }}
