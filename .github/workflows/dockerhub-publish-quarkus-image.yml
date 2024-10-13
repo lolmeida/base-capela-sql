@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+      
   workflow_call:
     inputs:
       images-to-keep:
@@ -24,6 +24,7 @@ on:
           - 3
           - 5
           - 10
+
 
 permissions:
   id-token: write
