@@ -23,8 +23,8 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <xstream.version>1.4.20</xstream.version>
-    <docker-hub-user>${my.user}</docker-hub-user>
-    <docker-hub-pass>${my.pass}</docker-hub-pass>
+    <!--<docker-hub-user>${my.user}</docker-hub-user>
+    <docker-hub-pass>${my.pass}</docker-hub-pass>-->
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -219,13 +219,13 @@
           <version>3.4.3</version>
           <configuration>
               <mainClass>com.lolmeida.MainClass</mainClass>
-              <to>
+              <!--<to>
                   <image>docker.io/lolmeida/base-capela-sql:latest</image>
                   <auth>
                       <username>${docker-hub-user}</username>
                       <password>${docker-hub-pass}</password>
                   </auth>
-              </to>
+              </to>-->
           </configuration>
       </plugin>
 
