@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - main
+      
+  workflow_call:
+    inputs:
+      images-to-keep:
+        description: "Keep last n images"
+        required: true
+        default: 3
+        type: number
 
   workflow_dispatch: # Allows manual triggering
     inputs:
@@ -12,8 +20,11 @@ on:
         description: Keep last n images
         default: 3
         options:
+          - 1
           - 3
           - 5
+          - 10
+
 
 permissions:
   id-token: write
@@ -65,7 +76,6 @@ jobs:
       - name: Delete old Docker images except last 5
         run: |
           images_to_delete=$(docker images --format "{{.Repository}}:{{.Tag}} {{.CreatedAt}}" | sort -k2 | head -n -${{ inputs.images-to-keep || 2 }} | awk '{print $1}')
-
           if [ -n "$images_to_delete" ]; then
             echo "$images_to_delete" | xargs -I {} docker rmi {}
             echo "Deleted old images: $images_to_delete"
