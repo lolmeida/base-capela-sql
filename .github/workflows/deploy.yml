@@ -26,11 +26,11 @@ on:
       token-groups:
         type: string
         description: The list of groups for the token generation.
-        default: "ise-cargo-metadata-editor,ise-cargo-configuration-editor,ise-cargo-requirements-editor,\
-          ise-cargo-admin-info-editor,ise-cargo-styles-editor,ise-cargo-status-editor,ise-cargo-translations-editor,\
-          ise-cargo-viewer,ise-cargo-metadata-editor-china,ise-cargo-configuration-editor-china,\
-          ise-cargo-requirements-editor-china,ise-cargo-admin-info-editor-china,ise-cargo-styles-editor-china,\
-          ise-cargo-status-editor-china,ise-cargo-translations-editor-china,ise-cargo-viewer-china"
+        default: "peah-cargo-metadata-editor,peah-cargo-configuration-editor,peah-cargo-requirements-editor,\
+          peah-cargo-admin-info-editor,peah-cargo-styles-editor,peah-cargo-status-editor,peah-cargo-translations-editor,\
+          peah-cargo-viewer,peah-cargo-metadata-editor-china,peah-cargo-configuration-editor-china,\
+          peah-cargo-requirements-editor-china,peah-cargo-admin-info-editor-china,peah-cargo-styles-editor-china,\
+          peah-cargo-status-editor-china,peah-cargo-translations-editor-china,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
@@ -89,11 +89,11 @@ on:
       token-groups:
         type: string
         description: The list of groups for the token generation.
-        default: "ise-cargo-metadata-editor,ise-cargo-configuration-editor,ise-cargo-requirements-editor,\
-          ise-cargo-admin-info-editor,ise-cargo-styles-editor,ise-cargo-status-editor,ise-cargo-translations-editor,\
-          ise-cargo-viewer,ise-cargo-metadata-editor-china,ise-cargo-configuration-editor-china,\
-          ise-cargo-requirements-editor-china,ise-cargo-admin-info-editor-china,ise-cargo-styles-editor-china,\
-          ise-cargo-status-editor-china,ise-cargo-translations-editor-china,ise-cargo-viewer-china"
+        default: "peah-cargo-metadata-editor,peah-cargo-configuration-editor,peah-cargo-requirements-editor,\
+          peah-cargo-admin-info-editor,peah-cargo-styles-editor,peah-cargo-status-editor,peah-cargo-translations-editor,\
+          peah-cargo-viewer,peah-cargo-metadata-editor-china,peah-cargo-configuration-editor-china,\
+          peah-cargo-requirements-editor-china,peah-cargo-admin-info-editor-china,peah-cargo-styles-editor-china,\
+          peah-cargo-status-editor-china,peah-cargo-translations-editor-china,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
