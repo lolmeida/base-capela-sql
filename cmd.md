@@ -8,5 +8,3 @@ echo "Delete all CANCELLED workflows"
 gh run list --repo lolmeida/base-capela-sql --status cancelled --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
 ```
 
-
-

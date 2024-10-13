@@ -254,35 +254,39 @@ jobs:
 #          repo-path: src/integration-tests/common-requests
 #          run-command: "before"
 
+      - name: Check repository
+        uses: actions/checkout@v4
+
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
         uses: lolmeida/peah-pipelines-templates/actions/helm@main
         with:
           token: ${{ secrets.PAT_TOKEN }}
-          aws-region: ${{ steps.utils.outputs.region }}
-          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
-          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
-          release-version: ${{ steps.tag.outputs.tag }}
-          hub: ${{ steps.utils.outputs.hub }}
-          environment: ${{ steps.utils.outputs.env }}
-          dry-run: ${{ inputs.dry-run }}
-          namespace: ${{ steps.utils.outputs.namespace }}
-          service: "${{ env.SERVICE_ID }}${{ inputs.canary-deploy && '-canary' || '' }}"
-          eks-name: ${{ steps.utils.outputs.eks_name }}
-          helm-vars: |
-            cachePass=${{ env.MEMORYDB_PASSWORD }}
-            cacheUser=${{ env.MEMORYDB_USER_GROUP }}
-            cacheEncryptionKey=${{ env.MEMORYDB_ENCRYPTION_KEY }}
-            authorizationToken=${{ env.AUTHORIZATION_TOKEN }}
-            truststorePassword=${{ env.JAVA_TRUSTSTORE_PASSWORD }}
-            cacheHost=${{ env.cluster_endpoint_address }}
-            ecrName=${{ env.ecr_name }}
-            ecrHost=${{ env.ecr_repository_url }}
-            contrastAPIUsername=${{ env.CONTRAST_API_USER_NAME }}
-            contrastAPIKey=${{ env.CONTRAST_API_API_KEY }}
-            contrastAPIServiceKey=${{ env.CONTRAST_API_SERVICE_KEY }}
-            canary.regex='${{ inputs.canary-percentage > 0 && steps.utils.outputs.canary-regex || 'true' }}'
-            canary.header=${{ inputs.canary-percentage > 0 && 'BMW-VIN' || 'BMW-CANARY' }}
+#          aws-region: ${{ steps.utils.outputs.region }}
+#          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
+#          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
+#          release-version: ${{ steps.tag.outputs.tag }}
+#          hub: ${{ steps.utils.outputs.hub }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          dry-run: ${{ inputs.dry-run }}
+#          namespace: ${{ steps.utils.outputs.namespace }}
+#          service: "${{ env.SERVICE_ID }}${{ inputs.canary-deploy && '-canary' || '' }}"
+#          eks-name: ${{ steps.utils.outputs.eks_name }}
+#          helm-vars: |
+#            cachePass=${{ env.MEMORYDB_PASSWORD }}
+#            cacheUser=${{ env.MEMORYDB_USER_GROUP }}
+#            cacheEncryptionKey=${{ env.MEMORYDB_ENCRYPTION_KEY }}
+#            authorizationToken=${{ env.AUTHORIZATION_TOKEN }}
+#            truststorePassword=${{ env.JAVA_TRUSTSTORE_PASSWORD }}
+#            cacheHost=${{ env.cluster_endpoint_address }}
+#            ecrName=${{ env.ecr_name }}
+#            ecrHost=${{ env.ecr_repository_url }}
+#            contrastAPIUsername=${{ env.CONTRAST_API_USER_NAME }}
+#            contrastAPIKey=${{ env.CONTRAST_API_API_KEY }}
+#            contrastAPIServiceKey=${{ env.CONTRAST_API_SERVICE_KEY }}
+#            canary.regex='${{ inputs.canary-percentage > 0 && steps.utils.outputs.canary-regex || 'true' }}'
+#            canary.header=${{ inputs.canary-percentage > 0 && 'BMW-VIN' || 'BMW-CANARY' }}
+
 
 #      - name: Run most common requests after deploy
 #        id: most_common_requests_after_deploy
