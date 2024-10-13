@@ -1,4 +1,4 @@
-name: Build and Publish Quarkus Image with Jib
+name: Setup Docker Hub & Publish Quarkus Image
 
 on:
   push:
@@ -21,22 +21,5 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: peah-pipelines-templates/actions/publish-dockerhub-image@main
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'corretto'
-
-      - name: Test secret access
-        run: |
-          echo "The secret is accessed but not shown for security reasons"
-          if [[ -z "${{ env.USERNAME }}" ]]; then echo "DOCKER_HUB_USERNAME is empty"; fi
-          if [[ -z "${{ env.PASSWORD }}" ]]; then echo "DOCKER_HUB_PASSWORD is empty"; fi
-
-      - name: Log into Docker Hub
-        run: docker login -u ${{ env.USERNAME }} -p ${{ env.PASSWORD }}
-
-      - name: Build and push Docker image with Jib
-        run: ./mvnw compile jib:build -Djib.to.image=docker.io/${{ github.repository }}:${{ github.sha }}
