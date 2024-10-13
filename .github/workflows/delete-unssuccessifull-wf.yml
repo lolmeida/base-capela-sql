@@ -1,4 +1,4 @@
-name: Cleanup Failed and Cancelled Workflows
+name: Cleanup Workflows by Status
 on:
   schedule:
     - cron: '0 0 * * *' # Runs daily at midnight UTC
@@ -19,19 +19,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-#      - name: Set up GitHub CLI
-#        uses: actions/checkout@v4
-
-#      - name: Install the gh cli
-#        uses: ksivamuthu/actions-setup-gh-cli@v3
-#        with:
-#          version: 2.24.3
-#      - run: |
-#          gh version
-
       - name: Delete all ${{ inputs.status }} workflows
         run: |
           gh run list --repo ${{ github.repository }} --status ${{ inputs.status }} --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
