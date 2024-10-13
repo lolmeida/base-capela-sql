@@ -217,16 +217,16 @@
           <groupId>com.google.cloud.tools</groupId>
           <artifactId>jib-maven-plugin</artifactId>
           <version>3.4.3</version>
-          <configuration>
+          <!--<configuration>
               <mainClass>com.lolmeida.MainClass</mainClass>
-              <!--<to>
+              &lt;!&ndash;<to>
                   <image>docker.io/lolmeida/base-capela-sql:latest</image>
                   <auth>
                       <username>${docker-hub-user}</username>
                       <password>${docker-hub-pass}</password>
                   </auth>
-              </to>-->
-          </configuration>
+              </to>&ndash;&gt;
+          </configuration>-->
       </plugin>
 
 
