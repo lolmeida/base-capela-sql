@@ -162,6 +162,8 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           ref: ${{ steps.utils.outputs.git_ref }}
           path: ./
@@ -259,7 +261,7 @@ jobs:
         id: deploy
         uses: peah-pipelines-templates/actions/helm@main
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 #          aws-region: ${{ steps.utils.outputs.region }}
 #          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
 #          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
