@@ -149,118 +149,118 @@ jobs:
       env: ${{ steps.utils.outputs.env }}
       hub: ${{ steps.utils.outputs.hub }}
     steps:
-      - name: TRM Utils
-        id: utils
-        uses: peah-pipelines-templates/actions/utils@main
-        with:
-          hub: ${{ inputs.hub || 'emea' }}
-          env: ${{ inputs.environment || 'test' }}
-          git-ref: ${{ inputs.release-version || github.head_ref || github.ref_name }}
-          product: sep
-          namespace: sep
-          product-key: ${{ env.SERVICE_ID }}
-          canary-percentage: ${{ inputs.canary-percentage || 0 }}
-
-      - name: Job details
-        run: |
-          echo "Event action is ${{ github.event.action }}"
-          echo "Event name is ${{ github.event_name }}"
-          echo 'utils: ${{ toJSON(steps.utils.outputs) }}'
-
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.utils.outputs.git_ref }}
-          path: ./
-
-      - name: Setup
-        id: setup
-        uses: peah-pipelines-templates/actions/setup@main
-        with:
-          overwrite-settings: true
-          settings-server-id: artifactory
-          hub: ${{ steps.utils.outputs.hub }}
-          env: ${{ steps.utils.outputs.env }}
-          aws-arn: ${{ steps.utils.outputs.role_arn_cicd }}
-          aws-region: ${{ steps.utils.outputs.region }}
-          java-version: 21
-        env:
-          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
-
-      - name: Get TAG
-        id: tag
-        uses: peah-pipelines-templates/actions/generate-tag@main
-        with:
-          git-ref: ${{ steps.utils.outputs.git_ref }}
-          date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
-          type-of-release: ${{ inputs.type-of-release || steps.utils.outputs.release_candidate_prefix }}
-
-      - name: Get secrets from Parameter Store
-        id: get_service_secrets_from_parameter_store
-        uses: peah-pipelines-templates/actions/aws-ssm@main
-        with:
-          parameters: |
-            JAVA_TRUSTSTORE_PASSWORD,/ices/trm/signing_service/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/truststore-password
-            MEMORYDB_PASSWORD,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/password
-            MEMORYDB_USER_GROUP,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/user_group_name
-            MEMORYDB_ENCRYPTION_KEY,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/encryption_key
-            AUTHORIZATION_TOKEN,/ices/trm/cargo/technical-user/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/jwt
-            PRIVATE_RSA_KEY,/ices/login/rsa-key/${{ steps.utils.outputs.region }}/${{ steps.utils.outputs.fullname_env }}/private
-          with-decryption: true
-
-      - name: Get contrast secrets from Parameter Store
-        id: get_contrast_secrets_from_parameter_store
-        if: steps.utils.outputs.hub == 'emea' && steps.utils.outputs.env == 'e2e'
-        uses: peah-pipelines-templates/actions/aws-ssm@main
-        with:
-          parameters: |
-            CONTRAST_API_USER_NAME,/ices/trm/contrast/sep/userName
-            CONTRAST_API_API_KEY,/ices/trm/contrast/sep/apiKey
-            CONTRAST_API_SERVICE_KEY,/ices/trm/contrast/sep/serviceKey
-          with-decryption: true
-
-      - name: Config MemoryDB
-        id: memory_db
-        uses: peah-pipelines-templates/actions/config-memorydb@main
-        with:
-          aws-region: ${{ steps.utils.outputs.region }}
-          hub: ${{ steps.utils.outputs.hub }}
-          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-          environment: ${{ steps.utils.outputs.env }}
-          approvers: ${{ steps.utils.outputs.team_q_numbers }}
-          memorydb-username: ${{ env.MEMORYDB_USER_GROUP }}
-          memorydb-password: ${{ env.MEMORYDB_PASSWORD }}
-          snapshot-retention-limit: 14
-          dry-run: ${{ inputs.dry-run }}
-
-      - name: Generate and Publish Quarkus Image
-        id: generate_and_publish_quarkus_image
-        uses: peah-pipelines-templates/actions/publish-quarkus-image@main
-        with:
-          aws-region: ${{ steps.utils.outputs.region_global_resources }}
-          aws-role: ${{ steps.utils.outputs.role_arn_global_resources }}
-          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-          service-name: ${{ env.SERVICE_ID }}
-          tag: ${{ steps.tag.outputs.tag }}
-          ecr-repository-url: ${{ steps.utils.outputs.ecr_repository_url }}
-          ecr-repo-name: ${{ env.SERVICE_ID }}
-          setup-ecr: ${{ inputs.setup-ecr }}
-        env:
-          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
-          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
-
-      - name: Run most common requests before deploy
-        id: most_common_requests_before_deploy
-        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
-        uses: peah-pipelines-templates/actions/common-requests@main
-        with:
-          hub: ${{ steps.utils.outputs.hub }}
-          environment: ${{ steps.utils.outputs.env }}
-          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-          repo-path: src/integration-tests/common-requests
-          run-command: "before"
+#      - name: TRM Utils
+#        id: utils
+#        uses: peah-pipelines-templates/actions/utils@main
+#        with:
+#          hub: ${{ inputs.hub || 'emea' }}
+#          env: ${{ inputs.environment || 'test' }}
+#          git-ref: ${{ inputs.release-version || github.head_ref || github.ref_name }}
+#          product: sep
+#          namespace: sep
+#          product-key: ${{ env.SERVICE_ID }}
+#          canary-percentage: ${{ inputs.canary-percentage || 0 }}
+#
+#      - name: Job details
+#        run: |
+#          echo "Event action is ${{ github.event.action }}"
+#          echo "Event name is ${{ github.event_name }}"
+#          echo 'utils: ${{ toJSON(steps.utils.outputs) }}'
+#
+#      - name: Checkout
+#        id: checkout
+#        uses: actions/checkout@v4
+#        with:
+#          ref: ${{ steps.utils.outputs.git_ref }}
+#          path: ./
+#
+#      - name: Setup
+#        id: setup
+#        uses: peah-pipelines-templates/actions/setup@main
+#        with:
+#          overwrite-settings: true
+#          settings-server-id: artifactory
+#          hub: ${{ steps.utils.outputs.hub }}
+#          env: ${{ steps.utils.outputs.env }}
+#          aws-arn: ${{ steps.utils.outputs.role_arn_cicd }}
+#          aws-region: ${{ steps.utils.outputs.region }}
+#          java-version: 21
+#        env:
+#          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+#          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+#
+#      - name: Get TAG
+#        id: tag
+#        uses: peah-pipelines-templates/actions/generate-tag@main
+#        with:
+#          git-ref: ${{ steps.utils.outputs.git_ref }}
+#          date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
+#          type-of-release: ${{ inputs.type-of-release || steps.utils.outputs.release_candidate_prefix }}
+#
+#      - name: Get secrets from Parameter Store
+#        id: get_service_secrets_from_parameter_store
+#        uses: peah-pipelines-templates/actions/aws-ssm@main
+#        with:
+#          parameters: |
+#            JAVA_TRUSTSTORE_PASSWORD,/ices/trm/signing_service/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/truststore-password
+#            MEMORYDB_PASSWORD,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/password
+#            MEMORYDB_USER_GROUP,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/user_group_name
+#            MEMORYDB_ENCRYPTION_KEY,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/encryption_key
+#            AUTHORIZATION_TOKEN,/ices/trm/cargo/technical-user/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/jwt
+#            PRIVATE_RSA_KEY,/ices/login/rsa-key/${{ steps.utils.outputs.region }}/${{ steps.utils.outputs.fullname_env }}/private
+#          with-decryption: true
+#
+#      - name: Get contrast secrets from Parameter Store
+#        id: get_contrast_secrets_from_parameter_store
+#        if: steps.utils.outputs.hub == 'emea' && steps.utils.outputs.env == 'e2e'
+#        uses: peah-pipelines-templates/actions/aws-ssm@main
+#        with:
+#          parameters: |
+#            CONTRAST_API_USER_NAME,/ices/trm/contrast/sep/userName
+#            CONTRAST_API_API_KEY,/ices/trm/contrast/sep/apiKey
+#            CONTRAST_API_SERVICE_KEY,/ices/trm/contrast/sep/serviceKey
+#          with-decryption: true
+#
+#      - name: Config MemoryDB
+#        id: memory_db
+#        uses: peah-pipelines-templates/actions/config-memorydb@main
+#        with:
+#          aws-region: ${{ steps.utils.outputs.region }}
+#          hub: ${{ steps.utils.outputs.hub }}
+#          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          approvers: ${{ steps.utils.outputs.team_q_numbers }}
+#          memorydb-username: ${{ env.MEMORYDB_USER_GROUP }}
+#          memorydb-password: ${{ env.MEMORYDB_PASSWORD }}
+#          snapshot-retention-limit: 14
+#          dry-run: ${{ inputs.dry-run }}
+#
+#      - name: Generate and Publish Quarkus Image
+#        id: generate_and_publish_quarkus_image
+#        uses: peah-pipelines-templates/actions/publish-quarkus-image@main
+#        with:
+#          aws-region: ${{ steps.utils.outputs.region_global_resources }}
+#          aws-role: ${{ steps.utils.outputs.role_arn_global_resources }}
+#          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#          service-name: ${{ env.SERVICE_ID }}
+#          tag: ${{ steps.tag.outputs.tag }}
+#          ecr-repository-url: ${{ steps.utils.outputs.ecr_repository_url }}
+#          ecr-repo-name: ${{ env.SERVICE_ID }}
+#          setup-ecr: ${{ inputs.setup-ecr }}
+#        env:
+#          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+#          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+#
+#      - name: Run most common requests before deploy
+#        id: most_common_requests_before_deploy
+#        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
+#        uses: peah-pipelines-templates/actions/common-requests@main
+#        with:
+#          hub: ${{ steps.utils.outputs.hub }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#          repo-path: src/integration-tests/common-requests
+#          run-command: "before"
 
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
@@ -291,109 +291,109 @@ jobs:
             canary.regex='${{ inputs.canary-percentage > 0 && steps.utils.outputs.canary-regex || 'true' }}'
             canary.header=${{ inputs.canary-percentage > 0 && 'BMW-VIN' || 'BMW-CANARY' }}
 
-      - name: Run most common requests after deploy
-        id: most_common_requests_after_deploy
-        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
-        uses: peah-pipelines-templates/actions/common-requests@main
-        with:
-          hub: ${{ steps.utils.outputs.hub }}
-          environment: ${{ steps.utils.outputs.env }}
-          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-          repo-path: src/integration-tests/common-requests
-          run-command: "after"
-
-      - name: Integration Tests
-        id: integration_tests
-        if: ${{ fromJSON(env.INTEGRATION_TESTS) }}
-        uses: peah-pipelines-templates/actions/integration-tests@main
-        with:
-          hub: ${{ steps.utils.outputs.hub }}
-          environment: ${{ steps.utils.outputs.env }}
-          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-          repo-path: src/integration-tests/
-
-      - name: Tag Git Commit
-        id: tag_commit
-        if: (contains(steps.utils.outputs.git_ref, 'hotfix/') || steps.utils.outputs.git_ref == 'main') && steps.integration_tests.conclusion == 'success'
-        run: |
-          git tag ${{ steps.tag.outputs.tag }}
-          git push origin --tags
-
-      - name: Publish Release notes to confluence
-        id: publish_release_notes_to_confluence
-        if: contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env) && !inputs.canary-deploy
-        uses: peah-pipelines-templates/actions/publish-release-confluence@main
-        with:
-          username: ${{ secrets.TECHNICAL_USER_USERNAME }}
-          password: ${{ secrets.TECHNICAL_USER_PASSWORD }}
-          hub: ${{ steps.utils.outputs.hub }}
-          env: ${{ steps.utils.outputs.env }}
-          page-title: ${{ steps.utils.outputs.confluence_page_release_version_board_page_title }}
-          parent-id: ${{ steps.utils.outputs.confluence_parent_page_id }}
-          service-name: ${{ env.SERVICE_ID }}
-          release-version: ${{ steps.utils.outputs.git_ref }}
-
-      - name: Generate token
-        id: generate-token
-        uses: peah-pipelines-templates/actions/token-generator@main
-        with:
-          private-key: ${{ env.PRIVATE_RSA_KEY }}
-          subject: "SMOKE_TESTS"
-          groups: ${{ inputs.token-groups }}
-
-      - name: Run smoke tests
-        id: smoke_tests
-        if: ${{ inputs.environment != 'test' || fromJSON(inputs.run-smoke-tests) }}
-        shell: bash
-        run: |
-          pushd src/integration-tests
-          chmod +x run-smoke-tests.sh
-          echo "Token: ${{ steps.generate-token.outputs.token }}"
-          
-          touch args.csv
-          
-          if [ "${{ steps.generate-token.outputs.token }}" != '' ]; then
-            echo "authorization,Bearer ${{steps.generate-token.outputs.token}}" >> args.csv
-          fi
-          
-          echo "bmw-canary,${{inputs.canary-deploy}}" >> args.csv
-          
-          ./run-smoke-tests.sh "${{ inputs.hub }}-${{ inputs.environment }}"
-          popd
-
-      - name: Remove Canary
-        id: remove_canary
-        uses: peah-pipelines-templates/actions/helm-uninstall@main
-        with:
-          aws-region: ${{ steps.utils.outputs.region }}
-          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
-          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
-          hub: ${{ steps.utils.outputs.hub }}
-          environment: ${{ steps.utils.outputs.env }}
-          dry-run: ${{ inputs.dry-run }}
-          namespace: ${{ steps.utils.outputs.namespace }}
-          service: "${{ env.SERVICE_ID }}-canary"
-          eks-name: ${{ steps.utils.outputs.eks_name }}
-
-      - name: Notification deploy
-        id: notification_deploy
-        if: always() && steps.deploy.conclusion == 'success' && contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env)
-        uses: peah-pipelines-templates/actions/teams-notification-deploy@main
-        with:
-          service: ${{ env.SERVICE_NAME }}
-          hub: ${{ steps.utils.outputs.hub }}
-          env: ${{ steps.utils.outputs.env }}
-          release: ${{ steps.utils.outputs.git_ref }}
-          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_success }}
-          token: ${{ secrets.TECHNICAL_USER_TOKEN }}
-
-      - name: Fail Notification
-        if: failure() && steps.utils.outputs.env != 'test'
-        uses: peah-pipelines-templates/actions/teams-notification-fail@main
-        with:
-          hub: ${{ steps.utils.outputs.hub }}
-          env: ${{ steps.utils.outputs.env }}
-          dry-run: ${{ inputs.dry-run }}
-          triggered-by: ${{ github.event_name }}
-          steps-context: ${{ toJson(steps) }}
-          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_fail }}
+#      - name: Run most common requests after deploy
+#        id: most_common_requests_after_deploy
+#        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
+#        uses: peah-pipelines-templates/actions/common-requests@main
+#        with:
+#          hub: ${{ steps.utils.outputs.hub }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#          repo-path: src/integration-tests/common-requests
+#          run-command: "after"
+#
+#      - name: Integration Tests
+#        id: integration_tests
+#        if: ${{ fromJSON(env.INTEGRATION_TESTS) }}
+#        uses: peah-pipelines-templates/actions/integration-tests@main
+#        with:
+#          hub: ${{ steps.utils.outputs.hub }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#          repo-path: src/integration-tests/
+#
+#      - name: Tag Git Commit
+#        id: tag_commit
+#        if: (contains(steps.utils.outputs.git_ref, 'hotfix/') || steps.utils.outputs.git_ref == 'main') && steps.integration_tests.conclusion == 'success'
+#        run: |
+#          git tag ${{ steps.tag.outputs.tag }}
+#          git push origin --tags
+#
+#      - name: Publish Release notes to confluence
+#        id: publish_release_notes_to_confluence
+#        if: contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env) && !inputs.canary-deploy
+#        uses: peah-pipelines-templates/actions/publish-release-confluence@main
+#        with:
+#          username: ${{ secrets.TECHNICAL_USER_USERNAME }}
+#          password: ${{ secrets.TECHNICAL_USER_PASSWORD }}
+#          hub: ${{ steps.utils.outputs.hub }}
+#          env: ${{ steps.utils.outputs.env }}
+#          page-title: ${{ steps.utils.outputs.confluence_page_release_version_board_page_title }}
+#          parent-id: ${{ steps.utils.outputs.confluence_parent_page_id }}
+#          service-name: ${{ env.SERVICE_ID }}
+#          release-version: ${{ steps.utils.outputs.git_ref }}
+#
+#      - name: Generate token
+#        id: generate-token
+#        uses: peah-pipelines-templates/actions/token-generator@main
+#        with:
+#          private-key: ${{ env.PRIVATE_RSA_KEY }}
+#          subject: "SMOKE_TESTS"
+#          groups: ${{ inputs.token-groups }}
+#
+#      - name: Run smoke tests
+#        id: smoke_tests
+#        if: ${{ inputs.environment != 'test' || fromJSON(inputs.run-smoke-tests) }}
+#        shell: bash
+#        run: |
+#          pushd src/integration-tests
+#          chmod +x run-smoke-tests.sh
+#          echo "Token: ${{ steps.generate-token.outputs.token }}"
+#
+#          touch args.csv
+#
+#          if [ "${{ steps.generate-token.outputs.token }}" != '' ]; then
+#            echo "authorization,Bearer ${{steps.generate-token.outputs.token}}" >> args.csv
+#          fi
+#
+#          echo "bmw-canary,${{inputs.canary-deploy}}" >> args.csv
+#
+#          ./run-smoke-tests.sh "${{ inputs.hub }}-${{ inputs.environment }}"
+#          popd
+#
+#      - name: Remove Canary
+#        id: remove_canary
+#        uses: peah-pipelines-templates/actions/helm-uninstall@main
+#        with:
+#          aws-region: ${{ steps.utils.outputs.region }}
+#          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
+#          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
+#          hub: ${{ steps.utils.outputs.hub }}
+#          environment: ${{ steps.utils.outputs.env }}
+#          dry-run: ${{ inputs.dry-run }}
+#          namespace: ${{ steps.utils.outputs.namespace }}
+#          service: "${{ env.SERVICE_ID }}-canary"
+#          eks-name: ${{ steps.utils.outputs.eks_name }}
+#
+#      - name: Notification deploy
+#        id: notification_deploy
+#        if: always() && steps.deploy.conclusion == 'success' && contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env)
+#        uses: peah-pipelines-templates/actions/teams-notification-deploy@main
+#        with:
+#          service: ${{ env.SERVICE_NAME }}
+#          hub: ${{ steps.utils.outputs.hub }}
+#          env: ${{ steps.utils.outputs.env }}
+#          release: ${{ steps.utils.outputs.git_ref }}
+#          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_success }}
+#          token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+#
+#      - name: Fail Notification
+#        if: failure() && steps.utils.outputs.env != 'test'
+#        uses: peah-pipelines-templates/actions/teams-notification-fail@main
+#        with:
+#          hub: ${{ steps.utils.outputs.hub }}
+#          env: ${{ steps.utils.outputs.env }}
+#          dry-run: ${{ inputs.dry-run }}
+#          triggered-by: ${{ github.event_name }}
+#          steps-context: ${{ toJson(steps) }}
+#          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_fail }}
