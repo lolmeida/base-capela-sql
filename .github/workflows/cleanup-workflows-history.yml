@@ -19,7 +19,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Delete all ${{ inputs.status }} workflows
+      - name: Job details
+        shell: bash
         run: |
-          echo "Deleting all ${{ inputs.status }} workflows for ${{ github.repository }}..."
+          echo "Inputs: ${{ toJSON(inputs) }}"
+
+      - name: Delete all ${{ inputs.status }} workflows
+        shell: bash
+        run: |
+          echo "Deleting all ${{ inputs.status }} workflows for ${{ github.repository }}"
           gh run list --repo ${{ github.repository }} --status ${{ inputs.status }} --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}

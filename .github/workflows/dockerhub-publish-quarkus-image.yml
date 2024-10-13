@@ -5,6 +5,16 @@ on:
     branches:
       - main
 
+  workflow_dispatch: # Allows manual triggering
+    inputs:
+      images-to-keep:
+        type: choice
+        description: Keep last n images
+        default: 3
+        options:
+          - 3
+          - 5
+
 permissions:
   id-token: write
   contents: read
@@ -20,6 +30,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Job details
+        shell: bash
+        run: |
+          echo "Inputs: ${{ toJSON(inputs) }}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         env:
@@ -49,7 +64,7 @@ jobs:
 
       - name: Delete old Docker images except last 5
         run: |
-          images_to_delete=$(docker images --format "{{.Repository}}:{{.Tag}} {{.CreatedAt}}" | sort -k2 | head -n -2 | awk '{print $1}')
+          images_to_delete=$(docker images --format "{{.Repository}}:{{.Tag}} {{.CreatedAt}}" | sort -k2 | head -n -${{ inputs.images-to-keep }} | awk '{print $1}')
 
           if [ -n "$images_to_delete" ]; then
             echo "$images_to_delete" | xargs -I {} docker rmi {}
@@ -58,4 +73,3 @@ jobs:
             echo "No images to delete"
           fi
         shell: bash
-
