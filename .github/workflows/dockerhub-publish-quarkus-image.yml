@@ -5,6 +5,16 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -20,16 +30,13 @@ jobs:
           distribution: 'corretto'
 
       - name: Test secret access
-        env:
-          MY_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
-          MY_PASS: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: |
           echo "The secret is accessed but not shown for security reasons"
-          if [[ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]]; then echo "DOCKER_HUB_USERNAME is empty"; fi
-          if [[ -z "${{ secrets.DOCKER_HUB_PASSWORD }}" ]]; then echo "DOCKER_HUB_PASSWORD is empty"; fi
+          if [[ -z "${{ env.USERNAME }}" ]]; then echo "DOCKER_HUB_USERNAME is empty"; fi
+          if [[ -z "${{ env.PASSWORD }}" ]]; then echo "DOCKER_HUB_PASSWORD is empty"; fi
 
       - name: Log into Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: docker login -u ${{ env.USERNAME }} -p ${{ env.PASSWORD }}
 
       - name: Build and push Docker image with Jib
         run: ./mvnw compile jib:build -Djib.to.image=docker.io/lolmeida/capela-quarkus-app:${{ github.sha }}
