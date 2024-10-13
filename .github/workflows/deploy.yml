@@ -259,7 +259,7 @@ jobs:
 
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
-        uses: lolmeida/peah-pipelines-templates/.github/actions/helm@main
+        uses: peah-pipelines-templates/actions/helm@main
         with:
           token: ${{ secrets.PAT_TOKEN }}
 #          aws-region: ${{ steps.utils.outputs.region }}
