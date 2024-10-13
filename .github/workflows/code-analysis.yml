@@ -13,7 +13,7 @@ concurrency:
 jobs:
   code-analysis:
     name: Code Analysis
-    uses: INFOTAIN/trm-pipelines-templates/.github/workflows/code-analysis.yml@main
+    uses: lolmeida/peah-pipelines-templates/.github/workflows/code-analysis.yml@main
     with:
       overwrite-settings: true
       settings-server-id: artifactory
