@@ -1,0 +1,23 @@
+name: Code Analysis
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # Every day at 7:00 UTC
+      branches:
+        - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  code-analysis:
+    name: Code Analysis
+    uses: INFOTAIN/trm-pipelines-templates/.github/workflows/code-analysis.yml@main
+    with:
+      overwrite-settings: true
+      settings-server-id: artifactory
+      queries-to-run: security-and-quality
+    secrets:
+      settings-server-username: ${{ secrets.TECHNICAL_USER_USERNAME }}
+      settings-server-password: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}

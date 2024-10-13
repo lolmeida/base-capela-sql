@@ -1,0 +1,29 @@
+version: 2
+registries:
+  maven-repository:
+    type: maven-repository
+    url: https://packages.orbit.bmwgroup.net/artifactory/smart-experience-platform-maven-virtual
+    username: ${{secrets.TECHNICAL_USER_USERNAME}}
+    password: ${{secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN}}
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    registries:
+      - maven-repository
+    labels:
+      - dependabot
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Lisbon"
+    target-branch: "main"
+    groups:
+      minor-patch-updates:
+        patterns: [ "*" ]
+        update-types: [ "minor", "patch" ]
+      major-updates:
+        patterns: [ "*" ]
+        exclude-patterns: [ "*quarkus*" ]
+        update-types: [ "major" ]

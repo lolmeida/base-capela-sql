@@ -1,0 +1,55 @@
+name: Performance Tests
+on:
+  workflow_dispatch:
+
+env:
+  SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+  SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-performance-tests:
+    runs-on: "cawe-linux-x64-compute-large"
+    steps:
+      - name: Validate inputs
+        uses: orbit-actions/java-workflows/.github/actions/validate-build-maven-inputs@v1
+        continue-on-error: false
+        with:
+          java-version: 21
+          java-distribution: corretto
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 21
+          check-latest: false
+          cache: maven
+          overwrite-settings: true
+          server-id: artifactory
+          server-username: SERVER_USERNAME
+          server-password: SERVER_PASSWORD
+
+      - name: Get property from POM
+        id: pom
+        run: |
+          echo "version=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${results-folder-gatling}' exec:exec)" >> $GITHUB_ENV
+          echo "build_directory=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.build.directory}' exec:exec)" >> $GITHUB_ENV
+
+      - name: Run Performance Tests
+        run: ./mvnw clean verify -DskipDCs -Dcheckstyle.skip -DskipITs -DskipUTs -Dquarkus.profile=test -P performance-tests gatling:test
+
+      - name: Export Result file
+        uses: actions/upload-artifact@v2
+        with:
+          name: gatling-results
+          path: "${{ env.build_directory }}/${{ env.version }}"

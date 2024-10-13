@@ -1,0 +1,31 @@
+name: Merge PR - Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-int:
+    name: Deploy to int
+    uses: ./.github/workflows/deploy.yml
+    with:
+      hub: emea
+      environment: int
+      run-integration-tests: true
+    secrets:
+      TECHNICAL_USER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+      TECHNICAL_USER_PASSWORD: ${{ secrets.TECHNICAL_USER_PASSWORD }}
+      TECHNICAL_USER_TOKEN: ${{ secrets.TECHNICAL_USER_TOKEN }}
+      TECHNICAL_USER_ARTIFACTORY_TOKEN: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+

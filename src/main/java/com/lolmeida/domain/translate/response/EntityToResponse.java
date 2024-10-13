@@ -25,7 +25,7 @@ public class EntityToResponse implements Function<User, UserResponse> {
     TranslateService translateService;
 
     /**
-     * Themes Service.
+     * Cargo Service.
      */
     @Inject
     UserService userService;

@@ -1,0 +1,171 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        description: Select the bump
+        default: patch
+        options:
+          - major
+          - minor
+          - patch
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  deployments: write
+  id-token: write
+  issues: write
+  discussions: write
+  packages: write
+  pages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+env:
+  SERVICE_NAME: "sep-app-cargo"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  create-release:
+    runs-on: "cawe-linux-x64-general-small"
+    outputs:
+      release-version: ${{ steps.semver.outputs.nextStrict }}
+    steps:
+      - name: TRM Utils
+        id: utils
+        uses: INFOTAIN/trm-pipelines-templates/actions/utils@main
+        with:
+          is-action-call: true
+          hub: ${{ inputs.hub || 'emea' }}
+          env: ${{ inputs.environment || 'test' }}
+          git-ref: ${{ github.head_ref || github.ref_name }}
+          product: sep
+          product-key: ${{ env.SERVICE_NAME }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.utils.outputs.git_ref }}
+          fetch-depth: 0
+          path: ./
+
+      - name: Validate if git ref is a tag
+        id: validate_tag
+        run: |
+          GIT_REF=${{ steps.utils.outputs.git_ref }}
+          if [ $(git tag -l "$GIT_REF") ]; then
+            GIT_COMMIT=$(git rev-list -n 1 ${GIT_REF})
+            echo "git_commit=$GIT_COMMIT" >> $GITHUB_OUTPUT
+            exit 0;
+          else
+            echo "The source must be a git tag."
+            exit 1;
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ steps.utils.outputs.region }}
+          role-to-assume: ${{ steps.utils.outputs.role_arn_cicd }}
+
+      - name: Job details
+        shell: bash
+        run: |
+          git rev-parse HEAD
+          echo "Git Ref is ${{ steps.utils.outputs.git_ref }}"
+          echo "Role ${{ steps.utils.outputs.role_arn_cicd }}"
+          aws sts get-caller-identity
+
+      - name: Get Values from Parameter Store
+        uses: INFOTAIN/trm-pipelines-templates/actions/aws-ssm@main
+        with:
+          parameters: |
+            ATC_USER,/infotain/technical-user/username
+            ATC_PASSWORD,/infotain/technical-user/password
+          with-decryption: true
+
+      - name: Get Next Version
+        id: semver
+        uses: INFOTAIN/trm-pipelines-templates/actions/semver@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref || github.ref_name }}
+          noVersionBumpBehavior: ${{ inputs.bump || 'patch' }}
+          majorList: "major"
+          minorList: "minor"
+          patchList: "patch"
+          hotfix-prefix: ${{ steps.utils.outputs.release_hotfix_prefix }}
+
+      - name: Release Approval for Hotfix
+        uses: trstringer/manual-approval@v1
+        if: contains(steps.utils.outputs.git_ref, steps.utils.outputs.release_hotfix_prefix)
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: ${{ steps.utils.outputs.team_q_numbers }}
+          minimum-approvals: 2
+          issue-title: "Hotfix Release ${{ steps.semver.outputs.nextStrict }}"
+          issue-body: "Compare with main: ${{ github.server_url }}/${{ github.repository }}/compare/main...${{ github.head_ref || github.ref_name }}"
+          exclude-workflow-initiator-as-approver: true
+
+      - name: Create tag ${{ steps.semver.outputs.nextStrict }} and push.
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.semver.outputs.nextStrict }}',
+              sha: '${{ steps.validate_tag.outputs.git_commit }}'
+            })
+
+      - name: Get created tag
+        run: |
+          git fetch
+
+      - name: Create Release
+        id: create_release
+        uses: INFOTAIN/trm-pipelines-templates/actions/gh-release@main
+        with:
+          token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          tag_name: ${{ steps.semver.outputs.nextStrict }}
+          previous_tag_name: ${{ steps.semver.outputs.current }}
+          name: Release ${{ steps.semver.outputs.nextStrict }}
+
+      - name: Publish release notes on Confluence
+        uses: INFOTAIN/trm-pipelines-templates/actions/publish-release-notes-confluence@main
+        with:
+          username: ${{ env.ATC_USER }}
+          password: ${{ env.ATC_PASSWORD }}
+          page-title: ${{ steps.utils.outputs.confluence_page_release_notes_page_title }}
+          parent-id: ${{ steps.utils.outputs.confluence_parent_page_id }}
+          release-data: ${{ steps.create_release.outputs.release_data }}
+          jira-issues: ${{ steps.create_release.outputs.jira_issues }}
+
+      - name: Re Tag ECR Image
+        uses: INFOTAIN/trm-pipelines-templates/actions/re-tag-image@main
+        with:
+          aws-region: ${{ steps.utils.outputs.region_global_resources_row }}
+          aws-role: ${{ steps.utils.outputs.role_arn_global_resources_row }}
+          aws-region-cn: ${{ steps.utils.outputs.region_global_resources_cn }}
+          aws-role-cn: ${{ steps.utils.outputs.role_arn_global_resources_cn }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          service-name: ${{ env.SERVICE_NAME }}
+          source-tag: ${{ steps.utils.outputs.git_ref }}
+          new-tag: ${{ steps.semver.outputs.nextStrict }}
+        env:
+          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_PASSWORD }}
+

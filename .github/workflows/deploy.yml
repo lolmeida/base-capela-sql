@@ -1,0 +1,399 @@
+name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select the environment
+        default: test
+        options:
+          - test
+          - int
+      hub:
+        type: choice
+        description: Select the Hub
+        default: emea
+        options:
+          - emea
+      run-integration-tests:
+        type: boolean
+        description: Run integration tests
+        default: false
+      run-smoke-tests:
+        type: boolean
+        description: Run smoke tests
+        default: false
+      token-groups:
+        type: string
+        description: The list of groups for the token generation.
+        default: "ise-cargo-metadata-editor,ise-cargo-configuration-editor,ise-cargo-requirements-editor,\
+          ise-cargo-admin-info-editor,ise-cargo-styles-editor,ise-cargo-status-editor,ise-cargo-translations-editor,\
+          ise-cargo-viewer,ise-cargo-metadata-editor-china,ise-cargo-configuration-editor-china,\
+          ise-cargo-requirements-editor-china,ise-cargo-admin-info-editor-china,ise-cargo-styles-editor-china,\
+          ise-cargo-status-editor-china,ise-cargo-translations-editor-china,ise-cargo-viewer-china"
+      dry-run:
+        type: boolean
+        description: Dry run test
+        default: false
+      canary-deploy:
+        type: boolean
+        description: Canary deploy?
+        default: true
+      canary-percentage:
+        type: number
+        description: Canary percentage (0 = canary header only)
+        default: 0
+      canary-upgrade-mode:
+        type: choice
+        description: Canary upgrade mode
+        default: remove-after-tests
+        options:
+          - remove-after-tests
+          - keep-after-tests
+      setup-ecr:
+        type: boolean
+        description: Setup ECR
+        default: false
+        required: false
+
+  workflow_call:
+    secrets:
+      TECHNICAL_USER_USERNAME:
+        required: true
+      TECHNICAL_USER_PASSWORD:
+        required: true
+      TECHNICAL_USER_TOKEN:
+        required: true
+      TECHNICAL_USER_ARTIFACTORY_TOKEN:
+        required: true
+    inputs:
+      environment:
+        type: string
+        description: Select the environment
+        default: test
+      hub:
+        type: string
+        description: Select the Hub
+        default: emea
+      release-version:
+        type: string
+        description: Release version.
+      run-integration-tests:
+        type: boolean
+        description: Run integration tests
+        default: false
+      run-smoke-tests:
+        type: boolean
+        description: Run smoke tests
+        default: false
+      token-groups:
+        type: string
+        description: The list of groups for the token generation.
+        default: "ise-cargo-metadata-editor,ise-cargo-configuration-editor,ise-cargo-requirements-editor,\
+          ise-cargo-admin-info-editor,ise-cargo-styles-editor,ise-cargo-status-editor,ise-cargo-translations-editor,\
+          ise-cargo-viewer,ise-cargo-metadata-editor-china,ise-cargo-configuration-editor-china,\
+          ise-cargo-requirements-editor-china,ise-cargo-admin-info-editor-china,ise-cargo-styles-editor-china,\
+          ise-cargo-status-editor-china,ise-cargo-translations-editor-china,ise-cargo-viewer-china"
+      dry-run:
+        type: boolean
+        description: Dry run test
+        default: false
+      type-of-release:
+        type: string
+        description: Type of release.
+        required: false
+      canary-deploy:
+        type: boolean
+        description: Canary deploy?
+        default: true
+        required: false
+      canary-percentage:
+        type: number
+        description: Canary percentage (0 = canary header only)
+        default: 0
+        required: false
+      canary-upgrade-mode:
+        type: string
+        description: Canary upgrade mode
+        default: remove-after-tests # One of: remove-after-tests, keep-after-tests
+        required: false
+      setup-ecr:
+        type: boolean
+        description: Setup ECR
+        default: false
+        required: false
+
+permissions:
+  id-token: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+env:
+  SERVICE_ID: "sep-app-cargo"
+  SERVICE_NAME: "Sep Cargo service"
+  INTEGRATION_TESTS: ${{ (fromJSON(inputs.run-integration-tests || false) && inputs.environment == 'test') || inputs.environment == 'int' }}
+  MOST_COMMON_REQUESTS: ${{ !fromJSON(inputs.dry-run || false) && contains(fromJson('["e2e", "prod"]'), inputs.environment || 'test') }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.hub }}-${{ inputs.environment }}
+  cancel-in-progress: true
+
+run-name: "Deploy to ${{ inputs.hub }} ${{ inputs.environment }} ${{ inputs.canary-deploy && '(canary)' || '' }}"
+
+jobs:
+  deploy:
+    runs-on: [ "cawe-linux-x64-compute-large${{inputs.hub=='cn' && '-cn' || ''}}" ]
+    environment: ${{ inputs.hub || 'emea' }}-${{ inputs.environment || 'test' }}
+    outputs:
+      env: ${{ steps.utils.outputs.env }}
+      hub: ${{ steps.utils.outputs.hub }}
+    steps:
+      - name: TRM Utils
+        id: utils
+        uses: INFOTAIN/trm-pipelines-templates/actions/utils@main
+        with:
+          hub: ${{ inputs.hub || 'emea' }}
+          env: ${{ inputs.environment || 'test' }}
+          git-ref: ${{ inputs.release-version || github.head_ref || github.ref_name }}
+          product: sep
+          namespace: sep
+          product-key: ${{ env.SERVICE_ID }}
+          canary-percentage: ${{ inputs.canary-percentage || 0 }}
+
+      - name: Job details
+        run: |
+          echo "Event action is ${{ github.event.action }}"
+          echo "Event name is ${{ github.event_name }}"
+          echo 'utils: ${{ toJSON(steps.utils.outputs) }}'
+
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.utils.outputs.git_ref }}
+          path: ./
+
+      - name: Setup
+        id: setup
+        uses: INFOTAIN/trm-pipelines-templates/actions/setup@main
+        with:
+          overwrite-settings: true
+          settings-server-id: artifactory
+          hub: ${{ steps.utils.outputs.hub }}
+          env: ${{ steps.utils.outputs.env }}
+          aws-arn: ${{ steps.utils.outputs.role_arn_cicd }}
+          aws-region: ${{ steps.utils.outputs.region }}
+          java-version: 21
+        env:
+          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+
+      - name: Get TAG
+        id: tag
+        uses: INFOTAIN/trm-pipelines-templates/actions/generate-tag@main
+        with:
+          git-ref: ${{ steps.utils.outputs.git_ref }}
+          date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
+          type-of-release: ${{ inputs.type-of-release || steps.utils.outputs.release_candidate_prefix }}
+
+      - name: Get secrets from Parameter Store
+        id: get_service_secrets_from_parameter_store
+        uses: INFOTAIN/trm-pipelines-templates/actions/aws-ssm@main
+        with:
+          parameters: |
+            JAVA_TRUSTSTORE_PASSWORD,/ices/trm/signing_service/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/truststore-password
+            MEMORYDB_PASSWORD,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/password
+            MEMORYDB_USER_GROUP,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/user_group_name
+            MEMORYDB_ENCRYPTION_KEY,/ices/sep/memorydb/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/encryption_key
+            AUTHORIZATION_TOKEN,/ices/trm/cargo/technical-user/${{ steps.utils.outputs.hub }}/${{ steps.utils.outputs.fullname_env }}/jwt
+            PRIVATE_RSA_KEY,/ices/login/rsa-key/${{ steps.utils.outputs.region }}/${{ steps.utils.outputs.fullname_env }}/private
+          with-decryption: true
+
+      - name: Get contrast secrets from Parameter Store
+        id: get_contrast_secrets_from_parameter_store
+        if: steps.utils.outputs.hub == 'emea' && steps.utils.outputs.env == 'e2e'
+        uses: INFOTAIN/trm-pipelines-templates/actions/aws-ssm@main
+        with:
+          parameters: |
+            CONTRAST_API_USER_NAME,/ices/trm/contrast/sep/userName
+            CONTRAST_API_API_KEY,/ices/trm/contrast/sep/apiKey
+            CONTRAST_API_SERVICE_KEY,/ices/trm/contrast/sep/serviceKey
+          with-decryption: true
+
+      - name: Config MemoryDB
+        id: memory_db
+        uses: INFOTAIN/trm-pipelines-templates/actions/config-memorydb@main
+        with:
+          aws-region: ${{ steps.utils.outputs.region }}
+          hub: ${{ steps.utils.outputs.hub }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          environment: ${{ steps.utils.outputs.env }}
+          approvers: ${{ steps.utils.outputs.team_q_numbers }}
+          memorydb-username: ${{ env.MEMORYDB_USER_GROUP }}
+          memorydb-password: ${{ env.MEMORYDB_PASSWORD }}
+          snapshot-retention-limit: 14
+          dry-run: ${{ inputs.dry-run }}
+
+      - name: Generate and Publish Quarkus Image
+        id: generate_and_publish_quarkus_image
+        uses: INFOTAIN/trm-pipelines-templates/actions/publish-quarkus-image@main
+        with:
+          aws-region: ${{ steps.utils.outputs.region_global_resources }}
+          aws-role: ${{ steps.utils.outputs.role_arn_global_resources }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          service-name: ${{ env.SERVICE_ID }}
+          tag: ${{ steps.tag.outputs.tag }}
+          ecr-repository-url: ${{ steps.utils.outputs.ecr_repository_url }}
+          ecr-repo-name: ${{ env.SERVICE_ID }}
+          setup-ecr: ${{ inputs.setup-ecr }}
+        env:
+          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+
+      - name: Run most common requests before deploy
+        id: most_common_requests_before_deploy
+        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
+        uses: INFOTAIN/trm-pipelines-templates/actions/common-requests@main
+        with:
+          hub: ${{ steps.utils.outputs.hub }}
+          environment: ${{ steps.utils.outputs.env }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          repo-path: src/integration-tests/common-requests
+          run-command: "before"
+
+      - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
+        id: deploy
+        uses: INFOTAIN/trm-pipelines-templates/actions/helm@main
+        with:
+          aws-region: ${{ steps.utils.outputs.region }}
+          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
+          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
+          release-version: ${{ steps.tag.outputs.tag }}
+          hub: ${{ steps.utils.outputs.hub }}
+          environment: ${{ steps.utils.outputs.env }}
+          dry-run: ${{ inputs.dry-run }}
+          namespace: ${{ steps.utils.outputs.namespace }}
+          service: "${{ env.SERVICE_ID }}${{ inputs.canary-deploy && '-canary' || '' }}"
+          eks-name: ${{ steps.utils.outputs.eks_name }}
+          helm-vars: |
+            cachePass=${{ env.MEMORYDB_PASSWORD }}
+            cacheUser=${{ env.MEMORYDB_USER_GROUP }}
+            cacheEncryptionKey=${{ env.MEMORYDB_ENCRYPTION_KEY }}
+            authorizationToken=${{ env.AUTHORIZATION_TOKEN }}
+            truststorePassword=${{ env.JAVA_TRUSTSTORE_PASSWORD }}
+            cacheHost=${{ env.cluster_endpoint_address }}
+            ecrName=${{ env.ecr_name }}
+            ecrHost=${{ env.ecr_repository_url }}
+            contrastAPIUsername=${{ env.CONTRAST_API_USER_NAME }}
+            contrastAPIKey=${{ env.CONTRAST_API_API_KEY }}
+            contrastAPIServiceKey=${{ env.CONTRAST_API_SERVICE_KEY }}
+            canary.regex='${{ inputs.canary-percentage > 0 && steps.utils.outputs.canary-regex || 'true' }}'
+            canary.header=${{ inputs.canary-percentage > 0 && 'BMW-VIN' || 'BMW-CANARY' }}
+
+      - name: Run most common requests after deploy
+        id: most_common_requests_after_deploy
+        if: ${{ fromJSON(env.MOST_COMMON_REQUESTS) }}
+        uses: INFOTAIN/trm-pipelines-templates/actions/common-requests@main
+        with:
+          hub: ${{ steps.utils.outputs.hub }}
+          environment: ${{ steps.utils.outputs.env }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          repo-path: src/integration-tests/common-requests
+          run-command: "after"
+
+      - name: Integration Tests
+        id: integration_tests
+        if: ${{ fromJSON(env.INTEGRATION_TESTS) }}
+        uses: INFOTAIN/trm-pipelines-templates/actions/integration-tests@main
+        with:
+          hub: ${{ steps.utils.outputs.hub }}
+          environment: ${{ steps.utils.outputs.env }}
+          repo-token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+          repo-path: src/integration-tests/
+
+      - name: Tag Git Commit
+        id: tag_commit
+        if: (contains(steps.utils.outputs.git_ref, 'hotfix/') || steps.utils.outputs.git_ref == 'main') && steps.integration_tests.conclusion == 'success'
+        run: |
+          git tag ${{ steps.tag.outputs.tag }}
+          git push origin --tags
+
+      - name: Publish Release notes to confluence
+        id: publish_release_notes_to_confluence
+        if: contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env) && !inputs.canary-deploy
+        uses: INFOTAIN/trm-pipelines-templates/actions/publish-release-confluence@main
+        with:
+          username: ${{ secrets.TECHNICAL_USER_USERNAME }}
+          password: ${{ secrets.TECHNICAL_USER_PASSWORD }}
+          hub: ${{ steps.utils.outputs.hub }}
+          env: ${{ steps.utils.outputs.env }}
+          page-title: ${{ steps.utils.outputs.confluence_page_release_version_board_page_title }}
+          parent-id: ${{ steps.utils.outputs.confluence_parent_page_id }}
+          service-name: ${{ env.SERVICE_ID }}
+          release-version: ${{ steps.utils.outputs.git_ref }}
+
+      - name: Generate token
+        id: generate-token
+        uses: INFOTAIN/trm-pipelines-templates/actions/token-generator@main
+        with:
+          private-key: ${{ env.PRIVATE_RSA_KEY }}
+          subject: "SMOKE_TESTS"
+          groups: ${{ inputs.token-groups }}
+
+      - name: Run smoke tests
+        id: smoke_tests
+        if: ${{ inputs.environment != 'test' || fromJSON(inputs.run-smoke-tests) }}
+        shell: bash
+        run: |
+          pushd src/integration-tests
+          chmod +x run-smoke-tests.sh
+          echo "Token: ${{ steps.generate-token.outputs.token }}"
+          
+          touch args.csv
+          
+          if [ "${{ steps.generate-token.outputs.token }}" != '' ]; then
+            echo "authorization,Bearer ${{steps.generate-token.outputs.token}}" >> args.csv
+          fi
+          
+          echo "bmw-canary,${{inputs.canary-deploy}}" >> args.csv
+          
+          ./run-smoke-tests.sh "${{ inputs.hub }}-${{ inputs.environment }}"
+          popd
+
+      - name: Remove Canary
+        id: remove_canary
+        uses: INFOTAIN/trm-pipelines-templates/actions/helm-uninstall@main
+        with:
+          aws-region: ${{ steps.utils.outputs.region }}
+          aws-role: ${{ steps.utils.outputs.role_arn_eks }}
+          aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
+          hub: ${{ steps.utils.outputs.hub }}
+          environment: ${{ steps.utils.outputs.env }}
+          dry-run: ${{ inputs.dry-run }}
+          namespace: ${{ steps.utils.outputs.namespace }}
+          service: "${{ env.SERVICE_ID }}-canary"
+          eks-name: ${{ steps.utils.outputs.eks_name }}
+
+      - name: Notification deploy
+        id: notification_deploy
+        if: always() && steps.deploy.conclusion == 'success' && contains(fromJson('["e2e", "prod"]'), steps.utils.outputs.env)
+        uses: INFOTAIN/trm-pipelines-templates/actions/teams-notification-deploy@main
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          hub: ${{ steps.utils.outputs.hub }}
+          env: ${{ steps.utils.outputs.env }}
+          release: ${{ steps.utils.outputs.git_ref }}
+          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_success }}
+          token: ${{ secrets.TECHNICAL_USER_TOKEN }}
+
+      - name: Fail Notification
+        if: failure() && steps.utils.outputs.env != 'test'
+        uses: INFOTAIN/trm-pipelines-templates/actions/teams-notification-fail@main
+        with:
+          hub: ${{ steps.utils.outputs.hub }}
+          env: ${{ steps.utils.outputs.env }}
+          dry-run: ${{ inputs.dry-run }}
+          triggered-by: ${{ github.event_name }}
+          steps-context: ${{ toJson(steps) }}
+          workflow-urls: ${{ steps.utils.outputs.teams_notification_deploy_fail }}

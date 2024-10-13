@@ -1,0 +1,37 @@
+name: PR - Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-analysis:
+    name: Code Analysis
+    uses: INFOTAIN/trm-pipelines-templates/.github/workflows/code-analysis.yml@main
+    with:
+      overwrite-settings: true
+      settings-server-id: artifactory
+      java-version: 21
+      queries-to-run: security-and-quality
+    secrets:
+      settings-server-username: ${{ secrets.TECHNICAL_USER_USERNAME }}
+      settings-server-password: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+
+  deploy:
+    name: Deploy to test
+    uses: ./.github/workflows/deploy.yml
+    with:
+      hub: emea
+      environment: test
+      run-integration-tests: false
+    secrets:
+      TECHNICAL_USER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+      TECHNICAL_USER_PASSWORD: ${{ secrets.TECHNICAL_USER_PASSWORD }}
+      TECHNICAL_USER_TOKEN: ${{ secrets.TECHNICAL_USER_TOKEN }}
+      TECHNICAL_USER_ARTIFACTORY_TOKEN: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+    needs: code-analysis
