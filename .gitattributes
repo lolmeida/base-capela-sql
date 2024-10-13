@@ -1,0 +1,2 @@
+minikube-darwin-amd64 filter=lfs diff=lfs merge=lfs -text
+minikube-darwin-arm64 filter=lfs diff=lfs merge=lfs -text
