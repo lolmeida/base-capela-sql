@@ -26,11 +26,7 @@ on:
       token-groups:
         type: string
         description: The list of groups for the token generation.
-        default: "peah-cargo-metadata-editor,peah-cargo-configuration-editor,peah-cargo-requirements-editor,\
-          peah-cargo-admin-info-editor,peah-cargo-styles-editor,peah-cargo-status-editor,peah-cargo-translations-editor,\
-          peah-cargo-viewer,peah-cargo-metadata-editor-china,peah-cargo-configuration-editor-china,\
-          peah-cargo-requirements-editor-china,peah-cargo-admin-info-editor-china,peah-cargo-styles-editor-china,\
-          peah-cargo-status-editor-china,peah-cargo-translations-editor-china,peah-cargo-viewer-china"
+        default: "peah-cargo-metadata-editor,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
@@ -89,11 +85,7 @@ on:
       token-groups:
         type: string
         description: The list of groups for the token generation.
-        default: "peah-cargo-metadata-editor,peah-cargo-configuration-editor,peah-cargo-requirements-editor,\
-          peah-cargo-admin-info-editor,peah-cargo-styles-editor,peah-cargo-status-editor,peah-cargo-translations-editor,\
-          peah-cargo-viewer,peah-cargo-metadata-editor-china,peah-cargo-configuration-editor-china,\
-          peah-cargo-requirements-editor-china,peah-cargo-admin-info-editor-china,peah-cargo-styles-editor-china,\
-          peah-cargo-status-editor-china,peah-cargo-translations-editor-china,peah-cargo-viewer-china"
+        default: "peah-cargo-metadata-editor,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
@@ -143,7 +135,7 @@ run-name: "Deploy to ${{ inputs.hub }} ${{ inputs.environment }} ${{ inputs.cana
 
 jobs:
   deploy:
-    runs-on: [ "cawe-linux-x64-compute-large" ]
+    runs-on: [ "cawe-linux-x64-compute-meium" ]
     environment: ${{ inputs.hub || 'emea' }}-${{ inputs.environment || 'test' }}
     outputs:
       env: ${{ steps.utils.outputs.env }}
