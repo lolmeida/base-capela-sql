@@ -254,6 +254,9 @@ jobs:
 #          repo-path: src/integration-tests/common-requests
 #          run-command: "before"
 
+      - name: Check repository
+        uses: actions/checkout@v4
+
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
         uses: lolmeida/peah-pipelines-templates/actions/helm@main
