@@ -57,6 +57,3 @@ jobs:
             echo "No images to delete"
           fi
         shell: bash
-
-
-
