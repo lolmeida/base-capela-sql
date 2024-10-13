@@ -135,7 +135,7 @@ run-name: "Deploy to ${{ inputs.hub }} ${{ inputs.environment }} ${{ inputs.cana
 
 jobs:
   deploy:
-    runs-on: [ "cawe-linux-x64-compute-meium" ]
+    runs-on: ubuntu-latest
     environment: ${{ inputs.hub || 'emea' }}-${{ inputs.environment || 'test' }}
     outputs:
       env: ${{ steps.utils.outputs.env }}
