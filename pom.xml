@@ -23,6 +23,8 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <xstream.version>1.4.20</xstream.version>
+    <docker-hub-user>${my.user}</docker-hub-user>
+    <docker-hub-pass>${my.pass}</docker-hub-pass>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -220,8 +222,8 @@
               <to>
                   <image>docker.io/lolmeida/base-capela-sql:latest</image>
                   <auth>
-                      <username>lolmeida</username>
-                      <password>L0#nasval</password>
+                      <username>${docker-hub-user}</username>
+                      <password>${docker-hub-pass}</password>
                   </auth>
               </to>
           </configuration>
