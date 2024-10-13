@@ -25,11 +25,9 @@ jobs:
           MY_USER: ${{ secrets.DOCKER_HUB_USERNAME }}
           MY_PASS: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Log in to Docker Hub
-        run: |
-          echo "User is: ${{ secrets.DOCKER_HUB_PASSWORD }}" 
-          echo "pass is: ${{ secrets.DOCKER_HUB_USERNAME }}"
-          docker login -u ${{ secrets.DOCKER_HUB_PASSWORD }} -p ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      - name: Log into Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
 
       - name: Build and push Docker image with Jib
         run: ./mvnw compile jib:build \
