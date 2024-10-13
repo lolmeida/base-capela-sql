@@ -22,4 +22,3 @@ jobs:
     steps:
       - name: Checkout repository
         uses: peah-pipelines-templates/actions/publish-dockerhub-image@main
-
