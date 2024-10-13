@@ -4,4 +4,4 @@
 GET {{host}}{{app-capela-port}}/cargo/api/v1/user
 content-type: application/json
 
-#> ../scripts/assertEqualResponse.js
+> ../scripts/assertEqualResponse.js
