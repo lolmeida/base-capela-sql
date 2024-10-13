@@ -10,3 +10,5 @@ gh run list --repo lolmeida/base-capela-sql --status cancelled --json databaseId
 
 
 
+PAT
+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
