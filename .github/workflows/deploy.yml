@@ -159,35 +159,35 @@ jobs:
 #          echo "Event name is ${{ github.event_name }}"
 #          echo 'utils: ${{ toJSON(steps.utils.outputs) }}'
 #
-#      - name: Checkout
-#        id: checkout
-#        uses: actions/checkout@v4
-#        with:
-#          ref: ${{ steps.utils.outputs.git_ref }}
-#          path: ./
-#
-#      - name: Setup
-#        id: setup
-#        uses: peah-pipelines-templates/actions/setup@main
-#        with:
-#          overwrite-settings: true
-#          settings-server-id: artifactory
-#          hub: ${{ steps.utils.outputs.hub }}
-#          env: ${{ steps.utils.outputs.env }}
-#          aws-arn: ${{ steps.utils.outputs.role_arn_cicd }}
-#          aws-region: ${{ steps.utils.outputs.region }}
-#          java-version: 21
-#        env:
-#          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
-#          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
-#
-#      - name: Get TAG
-#        id: tag
-#        uses: peah-pipelines-templates/actions/generate-tag@main
-#        with:
-#          git-ref: ${{ steps.utils.outputs.git_ref }}
-#          date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
-#          type-of-release: ${{ inputs.type-of-release || steps.utils.outputs.release_candidate_prefix }}
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.utils.outputs.git_ref }}
+          path: ./
+
+      - name: Setup
+        id: setup
+        uses: lolmeida/peah-pipelines-templates/actions/setup@main
+        with:
+          overwrite-settings: true
+          settings-server-id: artifactory
+          hub: ${{ steps.utils.outputs.hub }}
+          env: ${{ steps.utils.outputs.env }}
+          aws-arn: ${{ steps.utils.outputs.role_arn_cicd }}
+          aws-region: ${{ steps.utils.outputs.region }}
+          java-version: 21
+        env:
+          SERVER_USERNAME: ${{ secrets.TECHNICAL_USER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.TECHNICAL_USER_ARTIFACTORY_TOKEN }}
+
+      - name: Get TAG
+        id: tag
+        uses: lolmeida/peah-pipelines-templates/actions/generate-tag@main
+        with:
+          git-ref: ${{ steps.utils.outputs.git_ref }}
+          date-hash-format: ${{ (steps.utils.outputs.git_ref == 'main' || contains(steps.utils.outputs.git_ref, 'hotfix/')) && 'true' || 'false' }}
+          type-of-release: ${{ inputs.type-of-release || steps.utils.outputs.release_candidate_prefix }}
 #
 #      - name: Get secrets from Parameter Store
 #        id: get_service_secrets_from_parameter_store
@@ -254,12 +254,10 @@ jobs:
 #          repo-path: src/integration-tests/common-requests
 #          run-command: "before"
 
-      - name: Check repository
-        uses: actions/checkout@v4
 
       - name: Deploy To ${{ steps.utils.outputs.env }} ${{ inputs.canary-deploy && '(Canary)' || '' }}
         id: deploy
-        uses: lolmeida/peah-pipelines-templates/.github/actions/helm@main
+        uses: peah-pipelines-templates/actions/helm@main
         with:
           token: ${{ secrets.PAT_TOKEN }}
 #          aws-region: ${{ steps.utils.outputs.region }}
