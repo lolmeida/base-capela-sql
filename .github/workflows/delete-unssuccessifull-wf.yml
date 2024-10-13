@@ -3,7 +3,16 @@ on:
   schedule:
     - cron: '0 0 * * *' # Runs daily at midnight UTC
 
-  workflow_dispatch: {} # Allows manual triggering
+  workflow_dispatch:  # Allows manual triggering
+    inputs:
+      status:
+        type: choice
+        description: Workflow status to delete
+        default: failure
+        options:
+          - failure
+          - cancelled
+          - success
 
 jobs:
   cleanup:
@@ -23,10 +32,6 @@ jobs:
 #      - run: |
 #          gh version
 
-      - name: Delete all failed workflows
+      - name: Delete all ${{ inputs.status }} workflows
         run: |
-          gh run list --repo ${{ github.repository }} --status failure --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
-
-      - name: Delete all cancelled workflows
-        run: |
-          gh run list --repo ${{ github.repository }} --status cancelled --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
+          gh run list --repo ${{ github.repository }} --status ${{ inputs.status }} --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
