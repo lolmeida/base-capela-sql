@@ -20,4 +20,5 @@ jobs:
     steps:
       - name: Delete all ${{ inputs.status }} workflows
         run: |
+          echo "Deleting all ${{ inputs.status }} workflows for ${{ github.repository }}..."
           gh run list --repo ${{ github.repository }} --status ${{ inputs.status }} --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}

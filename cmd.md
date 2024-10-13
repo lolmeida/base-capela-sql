@@ -15,7 +15,7 @@ gh run list --repo lolmeida/base-capela-sql --status failure --json databaseId -
 gh run list --repo lolmeida/base-capela-sql --status cancelled --json databaseId --jq '.[].databaseId' | xargs -I {} gh run delete {}
 
 # List all  workflows
-gh run list --repo lolmeida/base-capela-sql
+# gh run list --repo lolmeida/base-capela-sql
 
 ```
 
