@@ -16,12 +16,12 @@ jobs:
       - name: Set up GitHub CLI
         uses: actions/checkout@v2
 
-      - name: Install the gh cli
-        uses: ksivamuthu/actions-setup-gh-cli@v3
-        with:
-          version: 2.24.3
-      - run: |
-          gh version
+#      - name: Install the gh cli
+#        uses: ksivamuthu/actions-setup-gh-cli@v3
+#        with:
+#          version: 2.24.3
+#      - run: |
+#          gh version
 
       - name: Delete all failed workflows
         run: |
