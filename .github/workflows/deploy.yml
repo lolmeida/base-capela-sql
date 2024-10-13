@@ -258,6 +258,7 @@ jobs:
         id: deploy
         uses: lolmeida/peah-pipelines-templates/actions/helm@main
         with:
+          token: ${{ secrets.PAT_TOKEN }}
           aws-region: ${{ steps.utils.outputs.region }}
           aws-role: ${{ steps.utils.outputs.role_arn_eks }}
           aws-cicd-role: ${{ steps.utils.outputs.role_arn_cicd }}
