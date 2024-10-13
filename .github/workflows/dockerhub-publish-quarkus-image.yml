@@ -19,10 +19,10 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
-      - name: Job details
-        run: |
-          echo "Event action is ${{ github.event.action }}"
-          echo "Event name is ${{ github.event_name }}"
+      - name: Test secret access
+        run: echo "The secret is accessed but not shown for security reasons"
+        env:
+          MY_SECRET: ${{ secrets.DOCKER_HUB_USERNAME }}
 
       - name: Log in to Docker Hub
         run: |
