@@ -132,8 +132,8 @@ permissions:
 env:
   SERVICE_ID: "sep-app-cargo"
   SERVICE_NAME: "Sep Cargo service"
-  INTEGRATION_TESTS: ${{ (fromJSON(inputs.run-integration-tests || false) && inputs.environment == 'test') || inputs.environment == 'int' }}
-  MOST_COMMON_REQUESTS: ${{ !fromJSON(inputs.dry-run || false) && contains(fromJson('["e2e", "prod"]'), inputs.environment || 'test') }}
+  INTEGRATION_TESTS: ${{ (fromJSON(inputs.run-integration-tests || false) && inputs.environment == 'test') }}
+  MOST_COMMON_REQUESTS: ${{ (fromJSON(inputs.dry-run || false) &&  inputs.environment == 'test') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.hub }}-${{ inputs.environment }}
@@ -143,7 +143,7 @@ run-name: "Deploy to ${{ inputs.hub }} ${{ inputs.environment }} ${{ inputs.cana
 
 jobs:
   deploy:
-    runs-on: [ "cawe-linux-x64-compute-large${{inputs.hub=='cn' && '-cn' || ''}}" ]
+    runs-on: [ "cawe-linux-x64-compute-large" ]
     environment: ${{ inputs.hub || 'emea' }}-${{ inputs.environment || 'test' }}
     outputs:
       env: ${{ steps.utils.outputs.env }}
