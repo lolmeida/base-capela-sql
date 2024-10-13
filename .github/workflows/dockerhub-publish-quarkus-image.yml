@@ -36,7 +36,6 @@ jobs:
 
 
       - name: Build and push Docker image with Jib
-        run: ./mvnw compile jib:build \
-          -Djib.to.image=docker.io/lolmeida/capela-quarkus-app:${{ github.sha }} \
+        run: ./mvnw compile jib:build -Djib.to.image=docker.io/lolmeida/capela-quarkus-app:${{ github.sha }} \
           -Djib.to.auth.username=lolmeida \
           -Djib.to.auth.password=L0#nasval
