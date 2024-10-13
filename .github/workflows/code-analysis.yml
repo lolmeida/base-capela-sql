@@ -8,7 +8,7 @@ on:
     - cron: '0 7 * * *' # Every day at 7:00 UTC
       branches:
         - main
-  workflow_dispatch: {}
+  #workflow_dispatch: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
