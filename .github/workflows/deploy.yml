@@ -141,6 +141,17 @@ jobs:
       env: ${{ steps.utils.outputs.env }}
       hub: ${{ steps.utils.outputs.hub }}
     steps:
+      - name: Job details
+        shell: bash
+        run: |
+          echo "Inputs: ${{ toJSON(inputs) }}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        env:
+          USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Helm
         shell: bash
         run: |
