@@ -162,7 +162,8 @@ jobs:
           EXTRA_HELM_FILES="${FILE_ARGS:--f kubernetes/values/common.yaml -f kubernetes/values/${{ inputs.hub }}/${{ inputs.environment}}.yaml}"
           echo "helm upgrade --install  --atomic --timeout 15m \
           --namespace ${{inputs.namespace}} ${{steps.prepare.outputs.HELM_VARS }} \
-          --set-string ${EXTRA_HELM_FILES}"
+          --set-string clusterName=peah-test \
+          ${EXTRA_HELM_FILES}"
 #        env:
 #          FILE_ARGS: ${{ inputs.file-args}}
 
