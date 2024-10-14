@@ -23,6 +23,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
