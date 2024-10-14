@@ -151,7 +151,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run Helm
         shell: bash
         run: |
