@@ -144,6 +144,8 @@ jobs:
       - name: Run Helm
         shell: bash
         run: |
+          pwd
+          ls -la
           sed -i 's/%APP_VERSION%/'${{ inputs.release-version}}'/g' kubernetes/Chart.yaml
           sed -i 's/%APP_NAME%/'${{ inputs.service}}'/g' kubernetes/Chart.yaml
           EKS_VERSION=$(aws eks describe-cluster --name ${{inputs.eks-name}} --region ${{inputs.aws-region}} | jq .cluster.version -r | tr -d '\\n\')
