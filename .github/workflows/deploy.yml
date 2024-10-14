@@ -159,10 +159,9 @@ jobs:
           ls -la
           sed -i 's/%APP_VERSION%/'${{ inputs.release-version}}'/g' kubernetes/Chart.yaml
           sed -i 's/%APP_NAME%/'${{ inputs.service}}'/g' kubernetes/Chart.yaml
-          EKS_VERSION=$(aws eks describe-cluster --name ${{inputs.eks-name}} --region ${{inputs.aws-region}} | jq .cluster.version -r | tr -d '\\n\')
           EXTRA_HELM_FILES="${FILE_ARGS:--f kubernetes/values/common.yaml -f kubernetes/values/${{ inputs.hub }}/${{ inputs.environment}}.yaml}"
           helm upgrade --install ${{ inputs.dry-run == 'true' && '--dry-run' || '' }} --atomic --timeout ${{inputs.timeout}} ${{ 
-          inputs.service }} kubernetes --namespace ${{inputs.namespace}} ${{steps.prepare.outputs.HELM_VARS }} --set-string releaseVersion=${{ inputs.release-version}} --set-string clusterName=${{inputs.eks-name}}  --set-string clusterVersion=${EKS_VERSION} ${EXTRA_HELM_FILES}
+          inputs.service }} kubernetes --namespace ${{inputs.namespace}} ${{steps.prepare.outputs.HELM_VARS }} --set-string releaseVersion=${{ inputs.release-version}} --set-string clusterName=${{inputs.eks-name}}  --set-string ${EXTRA_HELM_FILES}
         env:
           FILE_ARGS: ${{ inputs.file-args}}
 
