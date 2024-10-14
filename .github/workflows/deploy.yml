@@ -158,8 +158,7 @@ jobs:
           sed -i 's/%APP_VERSION%/'${{ inputs.release-version}}'/g' kubernetes/Chart.yaml
           sed -i 's/%APP_NAME%/'${{ inputs.service}}'/g' kubernetes/Chart.yaml
           EXTRA_HELM_FILES="${FILE_ARGS:--f kubernetes/values/common.yaml -f kubernetes/values/${{ inputs.hub }}/${{ inputs.environment}}.yaml}"
-          helm upgrade my-release kubernetes --install --atomic --timeout 15m --namespace ${{ inputs.namespace }} --set-string 
-          clusterName=peah-test ${EXTRA_HELM_FILES}
+          helm upgrade my-release kubernetes --install --atomic --timeout 15m --namespace ${{ inputs.namespace }} --set-string clusterName=peah-test ${EXTRA_HELM_FILES}
 #          helm upgrade --install  --atomic --timeout 15m \
 #          --namespace ${{inputs.namespace}} \
 #          --set-string clusterName=peah-test \
