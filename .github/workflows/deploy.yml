@@ -23,10 +23,6 @@ on:
         type: boolean
         description: Run smoke tests
         default: false
-      token-groups:
-        type: string
-        description: The list of groups for the token generation.
-        default: "peah-cargo-metadata-editor,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
@@ -86,10 +82,6 @@ on:
         type: boolean
         description: Run smoke tests
         default: false
-      token-groups:
-        type: string
-        description: The list of groups for the token generation.
-        default: "peah-cargo-metadata-editor,peah-cargo-viewer-china"
       dry-run:
         type: boolean
         description: Dry run test
