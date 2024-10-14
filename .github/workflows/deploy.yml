@@ -161,7 +161,10 @@ jobs:
           sed -i 's/%APP_NAME%/'${{ inputs.service}}'/g' kubernetes/Chart.yaml
           EXTRA_HELM_FILES="${FILE_ARGS:--f kubernetes/values/common.yaml -f kubernetes/values/${{ inputs.hub }}/${{ inputs.environment}}.yaml}"
           echo "helm upgrade \
-          --install ${{ inputs.dry-run == 'true' && '--dry-run' || '' }} --set-string ${EXTRA_HELM_FILES}"
+          --install ${{ inputs.dry-run == 'true' && '--dry-run' || '' }} \
+          --atomic ${{ inputs.service }} kubernetes \
+          --namespace ${{inputs.namespace}} ${{steps.prepare.outputs.HELM_VARS }} \
+          --set-string ${EXTRA_HELM_FILES}"
 #        env:
 #          FILE_ARGS: ${{ inputs.file-args}}
 
