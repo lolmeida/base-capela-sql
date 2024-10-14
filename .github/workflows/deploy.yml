@@ -155,8 +155,6 @@ jobs:
       - name: Run Helm
         shell: bash
         run: |
-          pwd
-          ls -la
           sed -i 's/%APP_VERSION%/'${{ inputs.release-version}}'/g' kubernetes/Chart.yaml
           sed -i 's/%APP_NAME%/'${{ inputs.service}}'/g' kubernetes/Chart.yaml
           EXTRA_HELM_FILES="${FILE_ARGS:--f kubernetes/values/common.yaml -f kubernetes/values/${{ inputs.hub }}/${{ inputs.environment}}.yaml}"
