@@ -3,6 +3,6 @@ version: 1.0.0
 
 # application variables
 apiVersion: v1
-appVersion: %APP_VERSION%
-description: A Helm chart of %APP_NAME% for Kubernetes
-name: %APP_NAME%
+appVersion: 1.0.0
+description: A Helm chart of Capela for Kubernetes
+name: nc-cargasminikube update-context

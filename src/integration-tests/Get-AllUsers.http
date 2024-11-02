@@ -1,4 +1,4 @@
-### GET - Get Users
+s### GET - Get Users
 
 
 GET {{host}}{{app-capela-port}}/cargo/api/v1/user
